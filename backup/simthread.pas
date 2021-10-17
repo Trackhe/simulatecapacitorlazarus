@@ -5,7 +5,11 @@ unit simthread;
 interface
 
 uses
-  Classes, SysUtils, Windows;
+  {$ifdef unix}
+    cthreads,
+    //cmem,
+  {$endif}
+  Classes, Dialogs, SysUtils, Math;//,Windows
 
 type
   TShowStatusEvent = procedure(Status: String) of Object;
@@ -21,16 +25,31 @@ type
     Constructor Create(CreateSuspended : boolean);
   end;
 
+  TCShowStatusEvent = procedure(Result: Double) of Object;
   TCalculator = class(TThread)
   private
-    fStatusText : string;
-    FOnShowStatus: TShowStatusEvent;
-    procedure ShowStatus;
+    Result: Double;
+    FOnShowStatus: TCShowStatusEvent;
+
+    TResistor: UInt64;
+    TCapacity: UInt64;
+    TVoltage: UInt64;
+    TRes: UInt8;
+    TMode: UInt64;
+    //t = -ln((Uc(t))/(U_0))RC
+    //?=V0.01/R //Immer 2 Kommastellen genauer als Zeiteinstellung
+    //Zeit zum Entladen brauch man R C U und U(t) <- gibt die genauigkeit
+    procedure TCShowStatus;
   protected
     procedure Execute; override;
   public
-    property OnShowStatus: TShowStatusEvent read FOnShowStatus write FOnShowStatus;
-    Constructor Create(CreateSuspended : boolean, x : UInt64, y : UInt64, ); //UInt64 same as QWord biggest possible Number Type.
+    property TCOnShowStatus: TCShowStatusEvent read FOnShowStatus write FOnShowStatus;
+    Constructor Create(CreateSuspended : boolean); //UInt64 same as QWord biggest possible Number Type.
+    property PTResistor: UInt64 read TResistor write TResistor;
+    property PTCapacity: UInt64 read TCapacity write TCapacity;
+    property PTVoltage: UInt64 read TVoltage write TVoltage;
+    property PTRes: UInt8 read TRes write TRes;
+    property PTMode: UInt64 read TMode write TMode;
   end;
 
 implementation
@@ -56,7 +75,7 @@ procedure TSimmulation.Execute;
 var
   newStatus : string;
 begin
-  fStatusText := 'TMyThread Starting...';
+  fStatusText:='moin';
   Synchronize(@Showstatus);
   while (not Terminated) do
   begin
@@ -70,31 +89,55 @@ end;
 
 { TCalculator }
 
-constructor TCalculator.Create(CreateSuspended : boolean, );
+constructor TCalculator.Create(CreateSuspended : boolean);
 begin
   inherited Create(CreateSuspended);
 end;
 
-procedure TCalculator.ShowStatus;
+procedure TCalculator.TCShowStatus;
 begin
   if Assigned(FOnShowStatus) then
   begin
-    FOnShowStatus(fStatusText);
+    FOnShowStatus(Result);
   end;
 end;
 
 procedure TCalculator.Execute;
 var
-  newStatus : string;
+  calcres : Single;
 begin
-  while (not Terminated) do
-  begin
-    if NewStatus <> fStatusText then
-      begin
-        //fStatusText := newStatus;
-        //Synchronize(@Showstatus);
-      end;
-  end;
+
+ //tcalc.PTResistor//R
+ //tcalc.PTCapacity//C
+ //tcalc.PTVoltage//U_0
+ //tcalc.PTRes//
+ //tcalc.PTMode//Max Time Calc
+
+  Result:=0.01;
+  Synchronize(@TCShowstatus);
+
+  if TMode = 0 then
+   begin
+    //Max Time Calc.
+    //ln(RES/U_0)*R*C
+    case TRes of
+      0:
+        calcres := 1.0;
+      1:
+        calcres := 0.1;
+      2:
+        calcres := 0.01;
+      3:
+        calcres := 0.001;
+      else
+        calcres := 0.01;
+    end;
+    Result:=RoundTo(ln(calcres/TVoltage)*TResistor*TCapacity, -2);
+    Synchronize(@TCShowstatus);
+   end;
+
+
+
 end;
 
 end.

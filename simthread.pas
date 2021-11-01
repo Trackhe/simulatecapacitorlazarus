@@ -26,29 +26,34 @@ type
   end;
 
   TCShowStatusEvent = procedure(Result: Double) of Object;
+  TCShowStatusEvent1 = procedure(Result: Double; t: Double) of Object;
   TCalculator = class(TThread)
   private
     Result: Double;
+    t: Double;
+    e:Extended;
     FCOnShowStatus: TCShowStatusEvent;
-
+    FCOnShowStatus1: TCShowStatusEvent1;
     TResistor: UInt64;
     TCapacity: UInt64;
     TVoltage: UInt64;
-    TRes: UInt8;
+    TRes: Double;
     TMode: UInt64;
     //t = -ln((Uc(t))/(U_0))RC
     //?=V0.01/R //Immer 2 Kommastellen genauer als Zeiteinstellung
     //Zeit zum Entladen brauch man R C U und U(t) <- gibt die genauigkeit
     procedure TCShowStatus;
+    procedure TCShowStatus1;
   protected
     procedure Execute; override;
   public
     property TCOnShowStatus: TCShowStatusEvent read FCOnShowStatus write FCOnShowStatus;
+    property TCOnShowStatus1: TCShowStatusEvent1 read FCOnShowStatus1 write FCOnShowStatus1;
     Constructor Create(CreateSuspended : boolean); //UInt64 same as QWord biggest possible Number Type.
     property PTResistor: UInt64 read TResistor write TResistor;
     property PTCapacity: UInt64 read TCapacity write TCapacity;
     property PTVoltage: UInt64 read TVoltage write TVoltage;
-    property PTRes: UInt8 read TRes write TRes;
+    property PTRes: Double read TRes write TRes;
     property PTMode: UInt64 read TMode write TMode;
   end;
 
@@ -102,38 +107,37 @@ begin
   end;
 end;
 
+procedure TCalculator.TCShowStatus1;
+begin
+  if Assigned(FCOnShowStatus1) then
+  begin
+    FCOnShowStatus1(Result, t);
+  end;
+end;
+
 procedure TCalculator.Execute;
-var
-  calcres : Single;
 begin
 
- //tcalc.PTResistor//R
- //tcalc.PTCapacity//C
- //tcalc.PTVoltage//U_0
- //tcalc.PTRes//
- //tcalc.PTMode//Max Time Calc
-
-  Result:=0.01;
-  Synchronize(@TCShowstatus);
+ //TResistor//R
+ //TCapacity//C
+ //TVoltage//U_0
+ //TRes//
+ //TMode//Max Time Calc
 
   if TMode = 0 then
    begin
     //Max Time Calc.
     //ln(RES/U_0)*R*C
-    case TRes of
-      0:
-        calcres := 1.0;
-      1:
-        calcres := 0.1;
-      2:
-        calcres := 0.01;
-      3:
-        calcres := 0.001;
-      else
-        calcres := 0.01;
-    end;
-    Result:=RoundTo(ln(calcres/TVoltage)*TResistor*TCapacity, -2);
+    Result:=RoundTo(-ln(TRes/TVoltage)*TResistor*TCapacity, -2);
     Synchronize(@TCShowstatus);
+   end
+  else if Tmode = 1 then
+   begin
+    e:=Exp(1);
+    //U_0*e^-(t/(r*c))
+    Result:=RoundTo(TVoltage*Power(e, -(TRes/(TResistor*TCapacity))), -2);
+    t:=TRes;
+    Synchronize(@TCShowstatus1);
    end;
 
 

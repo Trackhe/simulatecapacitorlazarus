@@ -49,21 +49,27 @@ type
     CapacityLabel: TLabel;
     CapacityUnitLabel: TLabel;
 
+
+
+    procedure CalcAccuracyInputChange(Sender: TObject);
     procedure CapacityInputChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure HelpClick(Sender: TObject);
     procedure InVoltageInputChange(Sender: TObject);
+    procedure LoadUnloadClick(Sender: TObject);
     procedure ResistorInputChange(Sender: TObject);
-    procedure TabelleClick(Sender: TObject);
   private
+    ValueTable: TList;
     procedure ShowStatus(Status: string);
     procedure TCShowStatus(Result: Double);
+    procedure TCShowStatus1(Result: Double; t: Double);
   public
 
   end;
 
 var
   VoltUnitLabel: TVoltUnitLabel;
+  calcres: Double;
 
 
 
@@ -88,6 +94,11 @@ begin
  CapacityUnitLabel.caption:=Inttostr(CapacityInput.position) + 'F';
  CapacitorCapacity.caption:=Inttostr(CapacityInput.position) + 'F';
 
+ ResistorUnitLabel.caption:=Inttostr(ResistorInput.position) + 'Ohm';
+ CircuitResistor.caption:=Inttostr(ResistorInput.position) + 'Ohm';
+
+ calcres:=1.0;
+ CalcAccuracyInputLabel.caption:=floattostr(calcres)+'s';
 
  // Start Circuit simulation.
  tsim:=TSimmulation.Create(true);
@@ -117,6 +128,23 @@ procedure TVoltUnitLabel.CapacityInputChange(Sender: TObject);
 begin
  CapacityUnitLabel.caption:=Inttostr(CapacityInput.position) + 'F';
  CapacitorCapacity.caption:=Inttostr(CapacityInput.position) + 'F';
+end;
+
+procedure TVoltUnitLabel.CalcAccuracyInputChange(Sender: TObject);
+begin
+ case CalcAccuracyInput.position of
+  0:
+    calcres := 1.0;
+  1:
+    calcres := 0.1;
+  2:
+    calcres := 0.01;
+  3:
+    calcres := 0.001;
+  else
+    calcres := 0.01;
+ end;
+ CalcAccuracyInputLabel.caption:=floattostr(calcres)+'s';
 end;
 
 procedure TVoltUnitLabel.ResistorInputChange(Sender: TObject);
@@ -149,7 +177,7 @@ end;
 
 
 
-procedure TVoltUnitLabel.TabelleClick(Sender: TObject);
+procedure TVoltUnitLabel.LoadUnloadClick(Sender: TObject);
 var
  tcalc: TCalculator;
 begin
@@ -160,20 +188,43 @@ begin
  //ln(RES/U_0)*R*C
  tcalc.PTResistor:=ResistorInput.position;//gg R
  tcalc.PTCapacity:=CapacityInput.position;//gg C
- tcalc.PTVoltage:=InVoltageInput.position;//gg  U_0
- tcalc.PTRes:=2;//2 means 0.01
+ tcalc.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
+ tcalc.PTRes:=calcres;//2 means 0.01
  tcalc.PTMode:=0;//0 = Max Time Calc
  tcalc.Resume;
 
 end;
 
 procedure TVoltUnitLabel.TCShowStatus(Result: Double);
+var
+ ci : UInt64=1;
+ tcalc1: TCalculator;
 begin
- ShowMessage('hiho');
- //Label1.Caption:=floattostr(Result);
+ //ceil(Result) = sekunden bis genauigkeit 0 erreicht ist.
+ Label1.Caption:=floattostr(Result);
+ ValueTable.clear();
+ ValueTable.Capacity:=ceil(Result);
+ for ci:=1 to ceil(Result) do
+ begin
+   tcalc1:=TCalculator.Create(true);
+   tcalc1.TCOnShowStatus1 := @TCShowStatus1;
+   tcalc1.FreeOnTerminate:=true;
+   //Max Time Calc.
+   //ln(RES/U_0)*R*C
+   tcalc1.PTResistor:=ResistorInput.position;//gg R
+   tcalc1.PTCapacity:=CapacityInput.position;//gg C
+   tcalc1.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
+   tcalc1.PTRes:=ci;//2 means 0.01
+   tcalc1.PTMode:=1;//0 = Max Time Calc
+   tcalc1.Resume;
+ end;
 end;
 
+procedure TVoltUnitLabel.TCShowStatus1(Result: Double; t: Double);
+begin
+  //ShowMessage(floattostr(Result));
 
+end;
 
 
 

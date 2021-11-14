@@ -5,8 +5,19 @@ unit main;
 interface
 
 uses
+  {$IF defined(windows)}
+  Windows,
+  {$ELSEIF defined(freebsd) or defined(darwin)}
+  ctypes, sysctl,
+  {$ELSEIF defined(linux)}
+  {$linklib c}
+  ctypes,
+  {$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, TASources, TAChartCombos, TAGraph, Math;
+  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, Math;
+
+
+
 
 type
 
@@ -17,6 +28,7 @@ type
     CalcAccuracyInputLabel1: TLabel;
     CalcAccuracyLabel1: TLabel;
     Chart1: TChart;
+    Chart1LineSeries1: TLineSeries;
 
 
     Circuit: TImage;
@@ -27,6 +39,8 @@ type
     CircuitVolt: TLabel;
     CalcAccuracyInputLabel: TLabel;
     Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
     Label4: TLabel;
     CapacitorCapacity: TLabel;
     Label7: TLabel;
@@ -52,8 +66,10 @@ type
     CapacityLabel: TLabel;
     CapacityUnitLabel: TLabel;
 
-
-
+{    function GetSystemThreadCount: integer;
+    procedure CallLocalProc(AProc, Frame: Pointer; Param1: PtrInt;
+    Param2, Param3: Pointer); inline;
+}
     procedure CalcAccuracyInput1Change(Sender: TObject);
     procedure CalcAccuracyInputChange(Sender: TObject);
     procedure CapacityInputChange(Sender: TObject);
@@ -62,6 +78,7 @@ type
     procedure InVoltageInputChange(Sender: TObject);
     procedure LoadUnloadClick(Sender: TObject);
     procedure ResistorInputChange(Sender: TObject);
+    procedure TabelleClick(Sender: TObject);
   private
     ValueTable: array[1..2] of array of Double;
     procedure ShowStatus(Status: string);
@@ -76,8 +93,9 @@ var
   calcres: Double;
   calcres1: Double;
   calcres2: Double;
-
-
+  crsitc: Int64;
+  crs: UInt64;
+  ProcInfo: TProcessInformation;
 
 
 implementation
@@ -92,6 +110,7 @@ procedure TVoltUnitLabel.FormCreate(Sender: TObject);
 var
  tsim: TSimmulation;
 begin
+ //SetProcessAffinityMask(ProcInfo.hProcess, 0);
  // Init Defualt State
  VoltageUnitLabel.caption:=Inttostr(InVoltageInput.position * 12) + 'V';
  CircuitVolt.caption:=Inttostr(InVoltageInput.position * 12) + 'V';
@@ -201,6 +220,11 @@ begin
  CircuitResistor.caption:=Inttostr(ResistorInput.position) + 'Ohm';
 end;
 
+procedure TVoltUnitLabel.TabelleClick(Sender: TObject);
+begin
+
+end;
+
 
 
 
@@ -219,49 +243,145 @@ end;
 
 
 // Threading
+{
+{$IFDEF Linux}
+const _SC_NPROCESSORS_ONLN = 83;
+function sysconf(i: cint): clong; cdecl; external name 'sysconf';
+{$ENDIF}
+
+function GetSystemThreadCount: integer;
+   // returns a good default for the number of threads on this system
+   {$IF defined(windows)}
+   //returns total number of processors available to system including logical hyperthreaded processors
+   var
+     i: Integer;
+     ProcessAffinityMask, SystemAffinityMask: DWORD_PTR;
+     Mask: DWORD;
+     SystemInfo: SYSTEM_INFO;
+   begin
+     if GetProcessAffinityMask(GetCurrentProcess, ProcessAffinityMask, SystemAffinityMask)
+     then begin
+       Result := 0;
+       for i := 0 to 31 do begin
+         Mask := DWord(1) shl i;
+         if (ProcessAffinityMask and Mask)<>0 then
+           inc(Result);
+       end;
+     end else begin
+       //can't get the affinity mask so we just report the total number of processors
+       GetSystemInfo(SystemInfo);
+       Result := SystemInfo.dwNumberOfProcessors;
+     end;
+   end;
+   {$ELSEIF defined(UNTESTEDsolaris)}
+     begin
+       t = sysconf(_SC_NPROC_ONLN);
+     end;
+   {$ELSEIF defined(freebsd) or defined(darwin)}
+   type
+     PSysCtl = {$IF FPC_FULLVERSION>30300}pcint{$ELSE}pchar{$ENDIF};
+   var
+     mib: array[0..1] of cint;
+     len: csize_t;
+     t: cint;
+   begin
+     mib[0] := CTL_HW;
+     mib[1] := HW_NCPU;
+     len := sizeof(t);
+     fpsysctl(PSysCtl(@mib), 2, @t, @len, Nil, 0);
+     Result:=t;
+   end;
+   {$ELSEIF defined(linux)}
+     begin
+       Result:=sysconf(_SC_NPROCESSORS_ONLN);
+     end;
+   {$ELSE}
+     begin
+       Result:=1;
+     end;
+   {$ENDIF}
+
+procedure CallLocalProc(AProc, Frame: Pointer; Param1: PtrInt;
+     Param2, Param3: Pointer); inline;
+   type
+     PointerLocal = procedure(_EBP: Pointer; Param1: PtrInt;
+                              Param2, Param3: Pointer);
+  begin
+    PointerLocal(AProc)(Frame, Param1, Param2, Param3);
+   end;
+}
 
 
-
-
-
+var
+   tcalc1: TCalculator;
 
 procedure TVoltUnitLabel.LoadUnloadClick(Sender: TObject);
 var
  tcalc: TCalculator;
 begin
- if not(ResistorInput.position == 0 and CapacityInput.position == 0 and InVoltageInput.position == 0) then
+ if (LoadUnload.Caption = 'Entladen') then
  begin
- tcalc:=TCalculator.Create(true);
- tcalc.TCOnShowStatus := @TCShowStatus;
- tcalc.FreeOnTerminate:=true;
- //Max Time Calc.
- //ln(RES/U_0)*R*C
- tcalc.PTResistor:=ResistorInput.position;//gg R
- tcalc.PTCapacity:=CapacityInput.position;//gg C
- tcalc.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
- tcalc.PTRes:=calcres;//2 means 0.01
- tcalc.PTMode:=0;//0 = Max Time Calc
- tcalc.Resume;
+   if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0) then
+   begin
+   //GetLogicalCpuCount();
+   tcalc:=TCalculator.Create(true);
+   tcalc.TCOnShowStatus := @TCShowStatus;
+   tcalc.FreeOnTerminate:=true;
+   //Max Time Calc.
+   //ln(RES/U_0)*R*C
+   tcalc.PTResistor:=ResistorInput.position;//gg R
+   tcalc.PTCapacity:=CapacityInput.position;//gg C
+   tcalc.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
+   tcalc.PTRes:=calcres;//2 means 0.01
+   tcalc.PTMode:=0;//0 = Max Time Calc
+   tcalc.Start;
+   LoadUnload.Caption:='Abbrechen';
+   end;
+ end
+ else if (LoadUnload.Caption = 'Laden') then
+ begin
+   LoadUnload.Caption:= 'Entladen';
+ end
+ else if (LoadUnload.Caption = 'Abbrechen') then
+ begin
+   tcalc1.Terminate;
+   //tcalc1.Free;
+   LoadUnload.Caption:= 'Laden';
  end;
 end;
 
 procedure TVoltUnitLabel.TCShowStatus(Result: Double);
 var
  ci : UInt64=1;
- tcalc1: TCalculator;
- crs: UInt64;
+ crstcountpart: UInt64;
+ ProcAFMask,
+ SysAFMask  : QWord;
+ CPUcores: set of 0..31;
 begin
+ { Get the current values }
+ //GetProcessAffinityMask( GetCurrentProcess, ProcAFMask, SysAFMask);
+ { Manipulate }
+ //SysAFMAsk := $00000001; // Set this process to run on CPU 1 only
+ { Set the Process Affinity Mask }
+ //SetProcessAffinityMask( GetCurrentProcess, SysAFMAsk);
+
+ CPUcores:=[]; //0 .. 63
+
  //ceil(Result) = sekunden bis genauigkeit 0 erreicht ist.
  Label1.Caption:=floattostr(Result * calcres2);
- crs:=Round(ceil(Result)*calcres2);
+ crs:=ceil(ceil(Result)*calcres2);
  Showmessage(inttostr(crs));
  SetLength(ValueTable[1],crs + 1);
  SetLength(ValueTable[2],crs + 1);
  ValueTable[1][crs + 1]:=crs;//Zeit
  ValueTable[2][crs + 1]:=0;//Ladung
- for ci:=1 to crs do
+ crsitc:=0;
+ crstcountpart:= ceil(crs / 32);
+ for ci:=1 to 32 do //CPU Core Count
  begin
+   CPUcores:=CPUcores+[ci];
    tcalc1:=TCalculator.Create(true);
+   tcalc1.AffinityMask:=dword(CPUcores);
    tcalc1.TCOnShowStatus1 := @TCShowStatus1;
    tcalc1.FreeOnTerminate:=true;
    //Max Time Calc.
@@ -271,14 +391,33 @@ begin
    tcalc1.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
    tcalc1.PTRes:=ci;
    tcalc1.PTMode:=1;
-   tcalc1.Resume;
+   tcalc1.PTCountPart:=crstcountpart;
+   tcalc1.Start;
  end;
 end;
 
 procedure TVoltUnitLabel.TCShowStatus1(Result: Double; t: Double);
+var
+ i:UÍnt64;
 begin
-   ValueTable[1][ceil(t)]:=t/calcres2;
-   ValueTable[2][ceil(t)]:=Result;
+
+   crsitc:=crsitc + 1;
+   ValueTable[1][ceil(t)]:=t/calcres2;//Zeitpunkt
+   ValueTable[2][ceil(t)]:=Result;//Ladungswert
+
+   Label2.Caption:=floattostrf(crsitc / (crs / 100), fffixed, 4, 0);
+   Application.ProcessMessages;
+   if crsitc = crs then
+   begin
+   ShowMessage('Fertig');
+   for i:= 0 to High(ValueTable[1]) do
+   begin
+    Chart1LineSeries1.AddXY(ValueTable[1][i],ValueTable[2][i]);
+    Application.ProcessMessages;
+   end;
+   LoadUnload.Caption:='Laden';
+   Application.ProcessMessages;
+   end;
 end;
 
 

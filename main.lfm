@@ -1,11 +1,11 @@
 object VoltUnitLabel: TVoltUnitLabel
-  Left = 2693
+  Left = 2569
   Height = 950
-  Top = 217
-  Width = 1089
+  Top = 172
+  Width = 1058
   Caption = 'Simulator - Kondensatorladung'
   ClientHeight = 950
-  ClientWidth = 1089
+  ClientWidth = 1058
   DesignTimePPI = 120
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000
@@ -2133,6 +2133,7 @@ object VoltUnitLabel: TVoltUnitLabel
     Width = 110
     Caption = 'Wertetabelle'
     Enabled = False
+    OnClick = TabelleClick
     ParentFont = False
     TabOrder = 0
   end
@@ -3076,32 +3077,6 @@ object VoltUnitLabel: TVoltUnitLabel
     }
     Stretch = True
   end
-  object Chart1: TChart
-    Left = 252
-    Height = 418
-    Top = 500
-    Width = 774
-    AxisList = <    
-      item
-        Marks.LabelBrush.Style = bsClear
-        Minors = <>
-        Title.LabelFont.Orientation = 900
-        Title.LabelBrush.Style = bsClear
-      end    
-      item
-        Alignment = calBottom
-        Marks.LabelBrush.Style = bsClear
-        Minors = <>
-        Title.LabelBrush.Style = bsClear
-      end>
-    Foot.Brush.Color = clBtnFace
-    Foot.Font.Color = clBlue
-    Title.Brush.Color = clBtnFace
-    Title.Font.Color = clBlue
-    Title.Text.Strings = (
-      'TAChart'
-    )
-  end
   object VoltageUnitLabel: TLabel
     Left = 198
     Height = 20
@@ -3211,7 +3186,7 @@ object VoltUnitLabel: TVoltUnitLabel
     OnChange = InVoltageInputChange
     Position = 2
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 3
   end
   object CapacityInput: TTrackBar
     Left = 12
@@ -3221,7 +3196,7 @@ object VoltUnitLabel: TVoltUnitLabel
     OnChange = CapacityInputChange
     Position = 0
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 4
   end
   object ResistorInput: TTrackBar
     Left = 10
@@ -3231,7 +3206,7 @@ object VoltUnitLabel: TVoltUnitLabel
     OnChange = ResistorInputChange
     Position = 0
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 5
   end
   object CalcAccuracyLabel: TLabel
     Left = 24
@@ -3260,7 +3235,7 @@ object VoltUnitLabel: TVoltUnitLabel
     OnChange = CalcAccuracyInputChange
     Position = 0
     ParentFont = False
-    TabOrder = 7
+    TabOrder = 6
   end
   object CalcAccuracyInputLabel: TLabel
     Left = 162
@@ -3298,7 +3273,7 @@ object VoltUnitLabel: TVoltUnitLabel
     OnChange = CalcAccuracyInput1Change
     Position = 0
     ParentFont = False
-    TabOrder = 8
+    TabOrder = 7
   end
   object CalcAccuracyLabel1: TLabel
     Left = 24
@@ -3317,5 +3292,48 @@ object VoltUnitLabel: TVoltUnitLabel
     Caption = 'Label2'
     ParentColor = False
     ParentFont = False
+  end
+  object Label3: TLabel
+    Left = 169
+    Height = 20
+    Top = 715
+    Width = 44
+    Caption = 'Label3'
+    ParentColor = False
+  end
+  object Chart1: TChart
+    Left = 250
+    Height = 455
+    Top = 484
+    Width = 772
+    AxisList = <    
+      item
+        Grid.Style = psClear
+        Arrow.Visible = True
+        Arrow.Width = 3
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Grid.Style = psClear
+        Alignment = calBottom
+        Arrow.Visible = True
+        Arrow.Width = 3
+        AtDataOnly = True
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    object Chart1LineSeries1: TLineSeries
+    end
   end
 end

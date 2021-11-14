@@ -9,7 +9,8 @@ uses
     cthreads,
     //cmem,
   {$endif}
-  Classes, Dialogs, SysUtils, Math;//,Windows
+  Classes, Dialogs, SysUtils, Math ,Windows, StdCtrls;
+
 
 type
   TShowStatusEvent = procedure(Status: String) of Object;
@@ -26,10 +27,11 @@ type
   end;
 
   TCShowStatusEvent = procedure(Result: Double) of Object;
-  TCShowStatusEvent1 = procedure() of Object;
+  TCShowStatusEvent1 = procedure(Result: Double; t: Double) of Object;
   TCalculator = class(TThread)
   private
     Result: Double;
+    t: Double;
     e:Extended;
     FCOnShowStatus: TCShowStatusEvent;
     FCOnShowStatus1: TCShowStatusEvent1;
@@ -38,11 +40,14 @@ type
     TVoltage: UInt64;
     TRes: Double;
     TMode: UInt64;
+    TCountPart: UInt64;
     //t = -ln((Uc(t))/(U_0))RC
     //?=V0.01/R //Immer 2 Kommastellen genauer als Zeiteinstellung
     //Zeit zum Entladen brauch man R C U und U(t) <- gibt die genauigkeit
+    FAffinityMask: dWord;
     procedure TCShowStatus;
     procedure TCShowStatus1;
+    procedure SetAffinity(const Value: dWord);
   protected
     procedure Execute; override;
   public
@@ -54,6 +59,8 @@ type
     property PTVoltage: UInt64 read TVoltage write TVoltage;
     property PTRes: Double read TRes write TRes;
     property PTMode: UInt64 read TMode write TMode;
+    property PTCountPart: UInt64 read TCountPart write TCountPart;
+    property AffinityMask : dWord read FAffinityMask write SetAffinity;
   end;
 
 implementation
@@ -77,7 +84,7 @@ end;
 
 procedure TSimmulation.Execute;
 var
-  newStatus : string;
+  NewStatus : string;
 begin
   fStatusText:='moin';
   Synchronize(@Showstatus);
@@ -110,11 +117,13 @@ procedure TCalculator.TCShowStatus1;
 begin
   if Assigned(FCOnShowStatus1) then
   begin
-    FCOnShowStatus1();
+    FCOnShowStatus1(Result, t);
   end;
 end;
 
 procedure TCalculator.Execute;
+var
+  i: UInt64;
 begin
 
  //TResistor//R
@@ -122,7 +131,7 @@ begin
  //TVoltage//U_0
  //TRes//
  //TMode//Max Time Calc
-
+  //SetThreadAffinty(0);
   if TMode = 0 then
    begin
     //Max Time Calc.
@@ -132,14 +141,24 @@ begin
    end
   else if Tmode = 1 then
    begin
-    e:=Exp(1);
-    //U_0*e^-(t/(r*c))
-    Result:=RoundTo(TVoltage*Power(e, -(TRes/(TResistor*TCapacity))), -2);
-    Synchronize(@TCShowstatus1);
+    for i:= ceil(TCountPart * (TRes - 1)) to ceil(TCountPart * TRes) do
+    begin
+      if (not Terminated) then
+       begin
+          e:=Exp(1);
+          //U_0*e^-(t/(r*c))
+          Result:=RoundTo(TVoltage*Power(e, -( i /(TResistor*TCapacity))), -2);
+          t:=TRes;
+          Synchronize(@TCShowstatus1);
+       end;
+    end;
    end;
+end;
 
-
-
+procedure TCalculator.SetAffinity(const Value: dWord);
+begin
+  FAffinityMask := SetThreadAffinityMask(Handle,Value);
+  if FAffinityMask = 0 then raise Exception.Create('Error setting thread affinity mask : ' + IntToStr(GetLastError));
 end;
 
 end.

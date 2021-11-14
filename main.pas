@@ -14,7 +14,7 @@ uses
   ctypes,
   {$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, TASources, TAChartCombos, TAGraph, Math;
+  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, Math;
 
 
 
@@ -28,6 +28,7 @@ type
     CalcAccuracyInputLabel1: TLabel;
     CalcAccuracyLabel1: TLabel;
     Chart1: TChart;
+    Chart1LineSeries1: TLineSeries;
 
 
     Circuit: TImage;
@@ -39,6 +40,7 @@ type
     CalcAccuracyInputLabel: TLabel;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
     Label4: TLabel;
     CapacitorCapacity: TLabel;
     Label7: TLabel;
@@ -76,6 +78,7 @@ type
     procedure InVoltageInputChange(Sender: TObject);
     procedure LoadUnloadClick(Sender: TObject);
     procedure ResistorInputChange(Sender: TObject);
+    procedure TabelleClick(Sender: TObject);
   private
     ValueTable: array[1..2] of array of Double;
     procedure ShowStatus(Status: string);
@@ -217,6 +220,11 @@ begin
  CircuitResistor.caption:=Inttostr(ResistorInput.position) + 'Ohm';
 end;
 
+procedure TVoltUnitLabel.TabelleClick(Sender: TObject);
+begin
+
+end;
+
 
 
 
@@ -302,36 +310,53 @@ procedure CallLocalProc(AProc, Frame: Pointer; Param1: PtrInt;
     PointerLocal(AProc)(Frame, Param1, Param2, Param3);
    end;
 }
+
+
+var
+   tcalc1: TCalculator;
+
 procedure TVoltUnitLabel.LoadUnloadClick(Sender: TObject);
 var
  tcalc: TCalculator;
 begin
- if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0) then
+ if (LoadUnload.Caption = 'Entladen') then
  begin
- //GetLogicalCpuCount();
- tcalc:=TCalculator.Create(true);
- tcalc.TCOnShowStatus := @TCShowStatus;
- tcalc.FreeOnTerminate:=true;
- //Max Time Calc.
- //ln(RES/U_0)*R*C
- tcalc.PTResistor:=ResistorInput.position;//gg R
- tcalc.PTCapacity:=CapacityInput.position;//gg C
- tcalc.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
- tcalc.PTRes:=calcres;//2 means 0.01
- tcalc.PTMode:=0;//0 = Max Time Calc
- tcalc.PTCountPart:=0;
- tcalc.Resume;
+   if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0) then
+   begin
+   //GetLogicalCpuCount();
+   tcalc:=TCalculator.Create(true);
+   tcalc.TCOnShowStatus := @TCShowStatus;
+   tcalc.FreeOnTerminate:=true;
+   //Max Time Calc.
+   //ln(RES/U_0)*R*C
+   tcalc.PTResistor:=ResistorInput.position;//gg R
+   tcalc.PTCapacity:=CapacityInput.position;//gg C
+   tcalc.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
+   tcalc.PTRes:=calcres;//2 means 0.01
+   tcalc.PTMode:=0;//0 = Max Time Calc
+   tcalc.Start;
+   LoadUnload.Caption:='Abbrechen';
+   end;
+ end
+ else if (LoadUnload.Caption = 'Laden') then
+ begin
+   LoadUnload.Caption:= 'Entladen';
+ end
+ else if (LoadUnload.Caption = 'Abbrechen') then
+ begin
+   tcalc1.Terminate;
+   //tcalc1.Free;
+   LoadUnload.Caption:= 'Laden';
  end;
 end;
 
 procedure TVoltUnitLabel.TCShowStatus(Result: Double);
 var
  ci : UInt64=1;
- tcalc1: TCalculator;
  crstcountpart: UInt64;
  ProcAFMask,
  SysAFMask  : QWord;
- CPUcores: UInt64;
+ CPUcores: set of 0..31;
 begin
  { Get the current values }
  //GetProcessAffinityMask( GetCurrentProcess, ProcAFMask, SysAFMask);
@@ -340,7 +365,7 @@ begin
  { Set the Process Affinity Mask }
  //SetProcessAffinityMask( GetCurrentProcess, SysAFMAsk);
 
- //CPUcores:= 0; //0 .. 63
+ CPUcores:=[]; //0 .. 63
 
  //ceil(Result) = sekunden bis genauigkeit 0 erreicht ist.
  Label1.Caption:=floattostr(Result * calcres2);
@@ -354,9 +379,9 @@ begin
  crstcountpart:= ceil(crs / 32);
  for ci:=1 to 32 do //CPU Core Count
  begin
-   CPUcores:= ci;
+   CPUcores:=CPUcores+[ci];
    tcalc1:=TCalculator.Create(true);
-   tcalc1.AffinityMask:=qword(CPUcores);
+   tcalc1.AffinityMask:=dword(CPUcores);
    tcalc1.TCOnShowStatus1 := @TCShowStatus1;
    tcalc1.FreeOnTerminate:=true;
    //Max Time Calc.
@@ -367,19 +392,31 @@ begin
    tcalc1.PTRes:=ci;
    tcalc1.PTMode:=1;
    tcalc1.PTCountPart:=crstcountpart;
-   tcalc1.Resume;
+   tcalc1.Start;
  end;
 end;
 
 procedure TVoltUnitLabel.TCShowStatus1(Result: Double; t: Double);
+var
+ i:UInt64;
 begin
+
    crsitc:=crsitc + 1;
-   ValueTable[1][ceil(t)]:=t/calcres2;
-   ValueTable[2][ceil(t)]:=Result;
-   Label2.Caption:=floattostr(crsitc / (crs / 100));
+   ValueTable[1][ceil(t)]:=t/calcres2;//Zeitpunkt
+   ValueTable[2][ceil(t)]:=Result;//Ladungswert
+
+   Label2.Caption:=floattostrf(crsitc / (crs / 100), fffixed, 4, 0);
+   Application.ProcessMessages;
    if crsitc = crs then
    begin
    ShowMessage('Fertig');
+   for i:= 0 to High(ValueTable[1]) do
+   begin
+    Chart1LineSeries1.AddXY(ValueTable[1][i],ValueTable[2][i]);
+    Application.ProcessMessages;
+   end;
+   LoadUnload.Caption:='Laden';
+   Application.ProcessMessages;
    end;
 end;
 

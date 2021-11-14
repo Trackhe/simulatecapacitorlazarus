@@ -44,10 +44,10 @@ type
     //t = -ln((Uc(t))/(U_0))RC
     //?=V0.01/R //Immer 2 Kommastellen genauer als Zeiteinstellung
     //Zeit zum Entladen brauch man R C U und U(t) <- gibt die genauigkeit
-    FAffinityMask: QWord;
+    FAffinityMask: dWord;
     procedure TCShowStatus;
     procedure TCShowStatus1;
-    procedure SetAffinity(const Value: QWord);
+    procedure SetAffinity(const Value: dWord);
   protected
     procedure Execute; override;
   public
@@ -60,7 +60,7 @@ type
     property PTRes: Double read TRes write TRes;
     property PTMode: UInt64 read TMode write TMode;
     property PTCountPart: UInt64 read TCountPart write TCountPart;
-    property AffinityMask : QWord read FAffinityMask write SetAffinity;
+    property AffinityMask : dWord read FAffinityMask write SetAffinity;
   end;
 
 implementation
@@ -132,28 +132,33 @@ begin
  //TRes//
  //TMode//Max Time Calc
   //SetThreadAffinty(0);
-  if TMode = 0 then
-   begin
-    //Max Time Calc.
-    //ln(RES/U_0)*R*C
-    Result:=RoundTo(-ln(TRes/TVoltage)*TResistor*TCapacity, -2);
-    Synchronize(@TCShowstatus);
-   end
-  else if Tmode = 1 then
-   begin
-    for i:= ceil(TCountPart * (TRes - 1)) to ceil(TCountPart * TRes) do
+  if (not Terminated) then
+  begin
+    if TMode = 0 then
     begin
-      e:=Exp(1);
-      //U_0*e^-(t/(r*c))
-      Result:=RoundTo(TVoltage*Power(e, -( i /(TResistor*TCapacity))), -2);
-      t:=TRes;
-      Synchronize(@TCShowstatus1);
+      //Max Time Calc.
+      //ln(RES/U_0)*R*C
+      Result:=RoundTo(-ln(TRes/TVoltage)*TResistor*TCapacity, -2);
+      Synchronize(@TCShowstatus);
+    end
+    else if Tmode = 1 then
+    begin
+      for i:= ceil(TCountPart * (TRes - 1)) to ceil(TCountPart * TRes) do
+      begin
+        if (not Terminated) then
+        begin
+           e:=Exp(1);
+           //U_0*e^-(t/(r*c))
+           Result:=RoundTo(TVoltage*Power(e, -( i /(TResistor*TCapacity))), -2);
+           t:=TRes;
+           Synchronize(@TCShowstatus1);
+        end;
+      end;
     end;
-   end;
-
+  end;
 end;
 
-procedure TCalculator.SetAffinity(const Value: QWord);
+procedure TCalculator.SetAffinity(const Value: dWord);
 begin
   FAffinityMask := SetThreadAffinityMask(Handle,Value);
   if FAffinityMask = 0 then raise Exception.Create('Error setting thread affinity mask : ' + IntToStr(GetLastError));

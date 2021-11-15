@@ -14,7 +14,7 @@ uses
   ctypes,
   {$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, Math;
+  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, Math, Process, LazLogger;
 
 
 
@@ -95,7 +95,7 @@ var
   calcres2: Double;
   crsitc: Int64;
   crs: UInt64;
-  ProcInfo: TProcessInformation;
+  ProcInfo: TProcess;
 
 
 implementation
@@ -314,6 +314,7 @@ procedure CallLocalProc(AProc, Frame: Pointer; Param1: PtrInt;
 
 var
    tcalc1: TCalculator;
+   zero_load_time: Double;
 
 procedure TVoltUnitLabel.LoadUnloadClick(Sender: TObject);
 var
@@ -340,6 +341,7 @@ begin
  end
  else if (LoadUnload.Caption = 'Laden') then
  begin
+   Chart1LineSeries1.clear;
    LoadUnload.Caption:= 'Entladen';
  end
  else if (LoadUnload.Caption = 'Abbrechen') then
@@ -373,11 +375,11 @@ begin
  Showmessage(inttostr(crs));
  SetLength(ValueTable[1],crs + 1);
  SetLength(ValueTable[2],crs + 1);
- ValueTable[1][crs + 1]:=crs;//Zeit
- ValueTable[2][crs + 1]:=0;//Ladung
+ zero_load_time:=Result;//Zeit
  crsitc:=0;
- crstcountpart:= ceil(crs / 32);
- for ci:=1 to 32 do //CPU Core Count
+ crstcountpart:= ceil(crs / 1);
+ ShowMessage(Floattostr(ceil(crs / 1)));
+ for ci:=1 to 1 do //CPU Core Count
  begin
    CPUcores:=CPUcores+[ci];
    tcalc1:=TCalculator.Create(true);
@@ -400,23 +402,29 @@ procedure TVoltUnitLabel.TCShowStatus1(Result: Double; t: Double);
 var
  i:UInt64;
 begin
-
    crsitc:=crsitc + 1;
    ValueTable[1][ceil(t)]:=t/calcres2;//Zeitpunkt
    ValueTable[2][ceil(t)]:=Result;//Ladungswert
-
+   //debugln(Floattostr(Result));// + ':' + Floattostr(Result)
    Label2.Caption:=floattostrf(crsitc / (crs / 100), fffixed, 4, 0);
    Application.ProcessMessages;
    if crsitc = crs then
    begin
    ShowMessage('Fertig');
-   for i:= 0 to High(ValueTable[1]) do
+   for i:= 0 to High(ValueTable[1]) - 1 do
    begin
-    Chart1LineSeries1.AddXY(ValueTable[1][i],ValueTable[2][i]);
-    Application.ProcessMessages;
+    if not (LoadUnload.Caption = 'Laden') then
+    begin
+      Chart1LineSeries1.AddXY(ValueTable[1][i],ValueTable[2][i]);
+      Application.ProcessMessages;
+    end;
    end;
-   LoadUnload.Caption:='Laden';
-   Application.ProcessMessages;
+       if not (LoadUnload.Caption = 'Laden') then
+       begin
+        Chart1LineSeries1.AddXY(zero_load_time, 0);
+        LoadUnload.Caption:='Laden';
+       end;
+       Application.ProcessMessages;
    end;
 end;
 

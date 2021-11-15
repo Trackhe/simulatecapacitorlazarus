@@ -9,7 +9,15 @@ uses
     cthreads,
     //cmem,
   {$endif}
-  Classes, Dialogs, SysUtils, Math ,Windows, StdCtrls;
+  {$IF defined(windows)}
+  Windows,
+  {$ELSEIF defined(freebsd) or defined(darwin)}
+  ctypes, sysctl,
+  {$ELSEIF defined(linux)}
+  {$linklib c}
+  ctypes,
+  {$ENDIF}
+  Classes, Dialogs, SysUtils, Math, StdCtrls, LazLogger;
 
 
 type
@@ -123,7 +131,7 @@ end;
 
 procedure TCalculator.Execute;
 var
-  i: UInt64;
+  i: DWord;
 begin
 
  //TResistor//R
@@ -149,8 +157,9 @@ begin
         begin
            e:=Exp(1);
            //U_0*e^-(t/(r*c))
-           Result:=RoundTo(TVoltage*Power(e, -( i /(TResistor*TCapacity))), -2);
-           t:=TRes;
+           debugln(Floattostr(i / TRes));
+           Result:=RoundTo(TVoltage*Power(e, -( (i / TRes) /(TResistor*TCapacity))), -2);
+           t:=i;
            Synchronize(@TCShowstatus1);
         end;
       end;
@@ -160,8 +169,8 @@ end;
 
 procedure TCalculator.SetAffinity(const Value: dWord);
 begin
-  FAffinityMask := SetThreadAffinityMask(Handle,Value);
-  if FAffinityMask = 0 then raise Exception.Create('Error setting thread affinity mask : ' + IntToStr(GetLastError));
+  //FAffinityMask := SetThreadAffinityMask(Handle,Value);
+  //if FAffinityMask = 0 then raise Exception.Create('Error setting thread affinity mask : ' + IntToStr(GetLastError));
 end;
 
 end.

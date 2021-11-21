@@ -371,8 +371,8 @@ begin
 
  //ceil(Result) = sekunden bis genauigkeit 0 erreicht ist.
  Label1.Caption:=floattostr(Result * calcres2);
- crs:=ceil(ceil(Result)*calcres2);
- Showmessage(inttostr(crs));
+ crs:=ceil(ceil(Result)*calcres2);//anzahl der endgültigen berechnungen
+ //Showmessage(inttostr(crs));
  SetLength(ValueTable[1],crs + 1);
  SetLength(ValueTable[2],crs + 1);
  zero_load_time:=Result;//Zeit

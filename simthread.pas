@@ -47,8 +47,10 @@ type
     TCapacity: UInt64;
     TVoltage: UInt64;
     TRes: Double;
+    TRes0: Double;
     TMode: UInt64;
     TCountPart: UInt64;
+    TRestCountPart: UInt64;
     //t = -ln((Uc(t))/(U_0))RC
     //?=V0.01/R //Immer 2 Kommastellen genauer als Zeiteinstellung
     //Zeit zum Entladen brauch man R C U und U(t) <- gibt die genauigkeit
@@ -66,8 +68,10 @@ type
     property PTCapacity: UInt64 read TCapacity write TCapacity;
     property PTVoltage: UInt64 read TVoltage write TVoltage;
     property PTRes: Double read TRes write TRes;
+    property PTRes0: Double read TRes0 write TRes0;
     property PTMode: UInt64 read TMode write TMode;
     property PTCountPart: UInt64 read TCountPart write TCountPart;
+    property PTRestCountPart: UInt64 read TRestCountPart write TRestCountPart;
     property AffinityMask : dWord read FAffinityMask write SetAffinity;
   end;
 
@@ -151,18 +155,28 @@ begin
     end
     else if Tmode = 1 then
     begin
-      for i:= ceil(TCountPart * (TRes - 1)) to ceil(TCountPart * TRes) do
+
+      if (TRes = 1) then
+      begin
+        TRestCountPart:=0;
+      end;
+      debugln(Floattostr(ceil((TCountPart * (TRes - 1)))) + ' bis' + Floattostr(ceil((TCountPart * TRes) + TRestCountPart)));
+      for i:= ceil((TCountPart * (TRes - 1)) + TRestCountPart) to ceil((TCountPart * TRes) + TRestCountPart) do
       begin
         if (not Terminated) then
         begin
            e:=Exp(1);
            //U_0*e^-(t/(r*c))
-           debugln(Floattostr(i / TRes));
-           Result:=RoundTo(TVoltage*Power(e, -( (i / TRes) /(TResistor*TCapacity))), -2);
+
+           Result:=RoundTo(TVoltage*Power(e, -( (i * TRes0) /(TResistor*TCapacity))), -2);
            t:=i;
            Synchronize(@TCShowstatus1);
         end;
       end;
+
+
+
+
     end;
   end;
 end;

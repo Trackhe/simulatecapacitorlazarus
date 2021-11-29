@@ -2133,7 +2133,6 @@ object VoltUnitLabel: TVoltUnitLabel
     Top = 664
     Width = 88
     Caption = 'Wertetabelle'
-    Enabled = False
     OnClick = TabelleClick
     ParentFont = False
     TabOrder = 0
@@ -3283,6 +3282,7 @@ object VoltUnitLabel: TVoltUnitLabel
     Height = 364
     Top = 387
     Width = 618
+    AntialiasingMode = amOn
     AxisList = <    
       item
         Grid.Style = psClear
@@ -3303,6 +3303,12 @@ object VoltUnitLabel: TVoltUnitLabel
         Minors = <>
         Title.LabelBrush.Style = bsClear
       end>
+    Extent.UseXMax = True
+    Extent.UseXMin = True
+    Extent.UseYMax = True
+    Extent.UseYMin = True
+    Extent.XMax = 1
+    Extent.YMax = 1
     Foot.Brush.Color = clBtnFace
     Foot.Font.Color = clBlue
     Title.Brush.Color = clBtnFace
@@ -3310,6 +3316,7 @@ object VoltUnitLabel: TVoltUnitLabel
     Title.Text.Strings = (
       'TAChart'
     )
+    DragMode = dmAutomatic
     object Chart1LineSeries1: TLineSeries
     end
   end
@@ -3322,5 +3329,16 @@ object VoltUnitLabel: TVoltUnitLabel
     OnClick = BeendenClick
     ParentFont = False
     TabOrder = 9
+  end
+  object ChartListbox1: TChartListbox
+    Left = 8
+    Height = 216
+    Top = 440
+    Width = 182
+    Chart = Chart1
+    Enabled = False
+    ItemHeight = 0
+    TabOrder = 10
+    Visible = False
   end
 end

@@ -14,7 +14,8 @@ uses
   ctypes,
   {$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, Math, Process, LazLogger, INIFiles;
+  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, TAChartListbox, Math,
+  Process, LazLogger, INIFiles;
 
 
 
@@ -29,6 +30,7 @@ type
     CalcAccuracyLabel1: TLabel;
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
+    ChartListbox1: TChartListbox;
 
 
     Circuit: TImage;
@@ -102,7 +104,7 @@ var
 
 implementation
 
-uses simthread;
+uses simthread, valuetable_form;
 
 {$R *.lfm}
 
@@ -240,20 +242,13 @@ end;
 
 procedure TVoltUnitLabel.TabelleClick(Sender: TObject);
 begin
-
+  Form3.Show;
 end;
 
 procedure TVoltUnitLabel.UnLoadClick(Sender: TObject);
 begin
 
 end;
-
-
-
-
-
-
-
 
 
 
@@ -408,6 +403,9 @@ begin
  crstcountpart:= crs div cpucount;
  crstcountpartrest:= crs mod cpucount;
  ShowMessage(Floattostr((crstcountpart * cpucount) + crstcountpartrest));
+ Chart1.Extent.YMax:=InVoltageInput.position * 12;
+ Chart1.Extent.XMax:=Result;
+
  for ci:=1 to cpucount do //CPU Core Count
  begin
    CPUcores:=CPUcores+[ci];
@@ -438,7 +436,7 @@ begin
    Application.ProcessMessages;
    if crsitc = crs then
    begin
-     ShowMessage('Fertig');
+     //ShowMessage('Fertig');
      for i:= 0 to High(ValueTable[1]) - 1 do
      begin
       if not (LoadUnload.Caption = 'Laden') then
@@ -451,6 +449,7 @@ begin
      begin
       //Chart1LineSeries1.AddXY(zero_load_time, 0);
       LoadUnload.Caption:='Laden';
+
      end;
    end;
 end;
@@ -464,4 +463,18 @@ end;
 
 
 end.
+
+
+//Todo: beenden button muss entladungsaufzeichnung beenden und schließen.
+//Todo: Alle Ergebnisse aufeinmal Zeichnen.
+
+
+
+
+
+
+
+
+
+
 

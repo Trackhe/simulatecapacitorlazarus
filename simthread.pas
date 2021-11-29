@@ -160,7 +160,7 @@ begin
       begin
         TRestCountPart:=0;
       end;
-      debugln(Floattostr(ceil((TCountPart * (TRes - 1)))) + ' bis' + Floattostr(ceil((TCountPart * TRes) + TRestCountPart)));
+      //debugln(Floattostr(ceil((TCountPart * (TRes - 1)))) + ' bis' + Floattostr(ceil((TCountPart * TRes) + TRestCountPart)));
       for i:= ceil((TCountPart * (TRes - 1)) + TRestCountPart) to ceil((TCountPart * TRes) + TRestCountPart) do
       begin
         if (not Terminated) then

@@ -48,6 +48,7 @@ type
     TVoltage: UInt64;
     TRes: Double;
     TRes0: Double;
+    TRes1: Double;
     TMode: UInt64;
     TCountPart: UInt64;
     TRestCountPart: UInt64;
@@ -69,6 +70,7 @@ type
     property PTVoltage: UInt64 read TVoltage write TVoltage;
     property PTRes: Double read TRes write TRes;
     property PTRes0: Double read TRes0 write TRes0;
+    property PTRes1: Double read TRes1 write TRes1;
     property PTMode: UInt64 read TMode write TMode;
     property PTCountPart: UInt64 read TCountPart write TCountPart;
     property PTRestCountPart: UInt64 read TRestCountPart write TRestCountPart;
@@ -136,6 +138,7 @@ end;
 procedure TCalculator.Execute;
 var
   i: DWord;
+  roundtoi: int32;
 begin
 
  //TResistor//R
@@ -144,13 +147,22 @@ begin
  //TRes//
  //TMode//Max Time Calc
   //SetThreadAffinty(0);
+  if(TRes1 = 0.01)
+  then roundtoi:=2
+  else if(TRes1 = 0.001)
+  then roundtoi:=3
+  else if(TRes1 = 0.1)
+  then roundtoi:=1
+  else roundtoi:=0;
+
+
   if (not Terminated) then
   begin
     if TMode = 0 then
     begin
       //Max Time Calc.
       //ln(RES/U_0)*R*C
-      Result:=RoundTo(-ln(TRes/TVoltage)*TResistor*TCapacity, -2);
+      Result:=RoundTo(-ln(TRes/TVoltage)*TResistor*TCapacity, -roundtoi);
       Synchronize(@TCShowstatus);
     end
     else if Tmode = 1 then
@@ -168,7 +180,7 @@ begin
            e:=Exp(1);
            //U_0*e^-(t/(r*c))
 
-           Result:=RoundTo(TVoltage*Power(e, -( (i * TRes0) /(TResistor*TCapacity))), -2);
+           Result:=RoundTo(TVoltage*Power(e, -( (i * TRes0) /(TResistor*TCapacity))), -roundtoi);
            t:=i;
            Synchronize(@TCShowstatus1);
         end;

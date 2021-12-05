@@ -4,55 +4,56 @@
     <PathDelim Value="\"/>
     <Version Value="11"/>
     <BuildModes Active="Default"/>
-    <Units Count="8">
+    <Units Count="11">
       <Unit0>
         <Filename Value="simulator.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="3" Y="8"/>
-        <UsageCount Value="150"/>
+        <CursorPos X="27" Y="21"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="main.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VoltUnitLabel"/>
+        <ComponentName Value="MainFrame"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="355"/>
-        <CursorPos X="33" Y="415"/>
-        <UsageCount Value="150"/>
+        <TopLine Value="327"/>
+        <CursorPos X="14" Y="342"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="helpform.pas"/>
+        <Filename Value="help_form.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form2"/>
+        <ComponentName Value="HelpForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="4"/>
-        <CursorPos X="20" Y="15"/>
-        <UsageCount Value="150"/>
+        <CursorPos X="94" Y="29"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="valuetable.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form3"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="3"/>
-        <CursorPos X="16"/>
-        <UsageCount Value="148"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="6"/>
+        <UsageCount Value="175"/>
       </Unit3>
       <Unit4>
         <Filename Value="simthread.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="93"/>
-        <CursorPos X="47" Y="146"/>
-        <UsageCount Value="142"/>
+        <TopLine Value="90"/>
+        <CursorPos X="19" Y="115"/>
+        <UsageCount Value="169"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -60,144 +61,167 @@
         <UnitName Value="LazTracer"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="43"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\win\wininc\ascdef.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="217"/>
         <CursorPos X="10" Y="256"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="43"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1791"/>
         <CursorPos X="15" Y="1827"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="4"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="D:\usr\lib\lazarus\2.0.6\components\lazutils\lazlogger.pas"/>
+        <UnitName Value="LazLogger"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="468"/>
+        <CursorPos Y="488"/>
+        <UsageCount Value="8"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="valuetable_form.pas"/>
+        <ComponentName Value="ValuetableForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="18" Y="4"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="C:\lazarus\lcl\grids.pas"/>
+        <UnitName Value="Grids"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="12795"/>
+        <CursorPos Y="12832"/>
+        <UsageCount Value="9"/>
+      </Unit10>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="92" Column="8" TopLine="53"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="480" Column="11" TopLine="425"/>
       </Position1>
       <Position2>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="157" Column="20" TopLine="87"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="486" Column="6" TopLine="437"/>
       </Position2>
       <Position3>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="158" Column="103" TopLine="87"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="485" Column="7" TopLine="439"/>
       </Position3>
       <Position4>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="157" Column="20" TopLine="87"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="476" Column="23" TopLine="439"/>
       </Position4>
       <Position5>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="158" Column="103" TopLine="87"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="485" Column="12" TopLine="439"/>
       </Position5>
       <Position6>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="157" Column="20" TopLine="87"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="486" Column="21" TopLine="443"/>
       </Position6>
       <Position7>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="86" Column="4" TopLine="31"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="487" Column="21" TopLine="444"/>
       </Position7>
       <Position8>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="157" Column="20" TopLine="87"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="488" Column="21" TopLine="449"/>
       </Position8>
       <Position9>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="13" Column="11"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="487" Column="21" TopLine="448"/>
       </Position9>
       <Position10>
-        <Filename Value="simthread.pas"/>
-        <Caret Line="12" Column="55"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="483" Column="58" TopLine="446"/>
       </Position10>
       <Position11>
         <Filename Value="simthread.pas"/>
-        <Caret Line="63" Column="71" TopLine="16"/>
+        <Caret Line="173" TopLine="117"/>
       </Position11>
       <Position12>
         <Filename Value="main.pas"/>
-        <Caret Line="355" Column="26" TopLine="316"/>
+        <Caret Line="483" Column="57" TopLine="446"/>
       </Position12>
       <Position13>
         <Filename Value="main.pas"/>
-        <Caret Line="356" Column="37" TopLine="311"/>
+        <Caret Line="484" Column="64" TopLine="446"/>
       </Position13>
       <Position14>
         <Filename Value="main.pas"/>
-        <Caret Line="334" Column="21" TopLine="317"/>
+        <Caret Line="477" Column="36" TopLine="443"/>
       </Position14>
       <Position15>
         <Filename Value="main.pas"/>
-        <Caret Line="357" Column="30" TopLine="314"/>
+        <Caret Line="485" Column="50" TopLine="443"/>
       </Position15>
       <Position16>
-        <Filename Value="main.pas"/>
-        <Caret Line="320" Column="11" TopLine="320"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="181" Column="96" TopLine="117"/>
       </Position16>
       <Position17>
-        <Filename Value="main.pas"/>
-        <Caret Line="199" Column="48" TopLine="209"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="139" Column="18" TopLine="105"/>
       </Position17>
       <Position18>
-        <Filename Value="main.pas"/>
-        <Caret Line="389" Column="32" TopLine="331"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="152" Column="17" TopLine="111"/>
       </Position18>
       <Position19>
         <Filename Value="main.pas"/>
-        <Caret Line="337" Column="16" TopLine="308"/>
+        <Caret Line="441" Column="11" TopLine="385"/>
       </Position19>
       <Position20>
         <Filename Value="main.pas"/>
-        <Caret Line="97" Column="2" TopLine="89"/>
+        <Caret Line="493" Column="34" TopLine="434"/>
       </Position20>
       <Position21>
         <Filename Value="main.pas"/>
-        <Caret Line="336" Column="15" TopLine="319"/>
+        <Caret Line="169" Column="74" TopLine="139"/>
       </Position21>
       <Position22>
         <Filename Value="main.pas"/>
-        <Caret Line="401" Column="4" TopLine="347"/>
+        <Caret Line="170" Column="26" TopLine="139"/>
       </Position22>
       <Position23>
         <Filename Value="main.pas"/>
-        <Caret Line="400" Column="4" TopLine="346"/>
+        <Caret Line="211" Column="69" TopLine="165"/>
       </Position23>
       <Position24>
         <Filename Value="main.pas"/>
-        <Caret Line="401" Column="4" TopLine="347"/>
+        <Caret Line="170" Column="33" TopLine="152"/>
       </Position24>
       <Position25>
         <Filename Value="main.pas"/>
-        <Caret Line="402" Column="4" TopLine="348"/>
+        <Caret Line="115" Column="28" TopLine="63"/>
       </Position25>
       <Position26>
         <Filename Value="main.pas"/>
-        <Caret Line="401" Column="4" TopLine="347"/>
+        <Caret Line="337" TopLine="280"/>
       </Position26>
       <Position27>
         <Filename Value="main.pas"/>
-        <Caret Line="402" Column="4" TopLine="348"/>
+        <Caret Line="340" Column="8" TopLine="319"/>
       </Position27>
       <Position28>
         <Filename Value="main.pas"/>
-        <Caret Line="403" Column="4" TopLine="349"/>
+        <Caret Line="369" TopLine="341"/>
       </Position28>
       <Position29>
         <Filename Value="main.pas"/>
-        <Caret Line="414" Column="44" TopLine="348"/>
+        <Caret Line="422" Column="11" TopLine="362"/>
       </Position29>
-      <Position30>
-        <Filename Value="main.pas"/>
-        <Caret Line="412" Column="38" TopLine="355"/>
-      </Position30>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

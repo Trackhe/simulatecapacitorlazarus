@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm3 }
+  { TValuetableForm }
 
-  TForm3 = class(TForm)
+  TValuetableForm = class(TForm)
     StringGrid1: TStringGrid;
     procedure FormCreate(Sender: TObject);
     procedure Label1Click(Sender: TObject);
@@ -23,7 +23,7 @@ type
   end;
 
 var
-  Form3: TForm3;
+  ValuetableForm: TValuetableForm;
 
 implementation
 
@@ -32,14 +32,14 @@ uses main;
 
 {$R *.lfm}
 
-{ TForm3 }
+{ TValuetableForm }
 
-procedure TForm3.FormCreate(Sender: TObject);
+procedure TValuetableForm.FormCreate(Sender: TObject);
 begin
 
 end;
 
-procedure TForm3.Label1Click(Sender: TObject);
+procedure TValuetableForm.Label1Click(Sender: TObject);
 begin
 
 end;

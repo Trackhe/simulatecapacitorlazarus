@@ -22,15 +22,15 @@ uses
 
 type
 
-  { TVoltUnitLabel }
+  { TMainFrame }
 
-  TVoltUnitLabel = class(TForm)
+  TMainFrame = class(TForm)
     CalcAccuracyInput1: TTrackBar;
     CalcAccuracyInputLabel1: TLabel;
-    CalcAccuracyLabel1: TLabel;
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
     ChartListbox1: TChartListbox;
+    CheckBox1: TCheckBox;
 
 
     Circuit: TImage;
@@ -42,6 +42,8 @@ type
     CalcAccuracyInputLabel: TLabel;
 
     CapacitorCapacity: TLabel;
+    CreatedBy: TLabel;
+    CalcPercentage: TLabel;
     Label4: TLabel;
     Label7: TLabel;
     CircuitSwitch: TLabel;
@@ -93,7 +95,7 @@ type
   end;
 
 var
-  VoltUnitLabel: TVoltUnitLabel;
+  MainFrame: TMainFrame;
   calcres: Double;
   calcres1: Double;
   calcres2: Double;
@@ -110,7 +112,7 @@ uses simthread, valuetable_form;
 
 
 
-procedure TVoltUnitLabel.FormCreate(Sender: TObject);
+procedure TMainFrame.FormCreate(Sender: TObject);
 var
  tsim: TSimmulation;
  SAVE_TEST: String;
@@ -151,7 +153,7 @@ end;
 
 
 // Update Dynamic UI
-procedure TVoltUnitLabel.ShowStatus(Status: string);
+procedure TMainFrame.ShowStatus(Status: string);
 begin
  CircuitVolt.Caption := Status;
 end;
@@ -159,24 +161,34 @@ end;
 
 // Update Static UI
 
-procedure TVoltUnitLabel.InVoltageInputChange(Sender: TObject);
+procedure TMainFrame.InVoltageInputChange(Sender: TObject);
 begin
  VoltageUnitLabel.caption:=Inttostr(InVoltageInput.position * 12) + 'V';
  CircuitVolt.caption:=Inttostr(InVoltageInput.position * 12) + 'V';
+ if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0)
+ then LoadUnload.Enabled:=true
+ else LoadUnload.Enabled:=false;
 end;
 
-procedure TVoltUnitLabel.LoadClick(Sender: TObject);
-begin
-
-end;
-
-procedure TVoltUnitLabel.CapacityInputChange(Sender: TObject);
+procedure TMainFrame.CapacityInputChange(Sender: TObject);
 begin
  CapacityUnitLabel.caption:=Inttostr(CapacityInput.position) + 'F';
  CapacitorCapacity.caption:=Inttostr(CapacityInput.position) + 'F';
+ if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0)
+ then LoadUnload.Enabled:=true
+ else LoadUnload.Enabled:=false;
 end;
 
-procedure TVoltUnitLabel.CalcAccuracyInputChange(Sender: TObject);
+procedure TMainFrame.ResistorInputChange(Sender: TObject);
+begin
+ ResistorUnitLabel.caption:=Inttostr(ResistorInput.position) + 'Ohm';
+ CircuitResistor.caption:=Inttostr(ResistorInput.position) + 'Ohm';
+ if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0)
+ then LoadUnload.Enabled:=true
+ else LoadUnload.Enabled:=false;
+end;
+
+procedure TMainFrame.CalcAccuracyInputChange(Sender: TObject);
 begin
  case CalcAccuracyInput.position of
   0:
@@ -193,7 +205,7 @@ begin
  CalcAccuracyInputLabel.caption:=floattostr(calcres)+'F';
 end;
 
-procedure TVoltUnitLabel.CalcAccuracyInput1Change(Sender: TObject);
+procedure TMainFrame.CalcAccuracyInput1Change(Sender: TObject);
 begin
  case CalcAccuracyInput1.position of
   0:
@@ -224,31 +236,15 @@ begin
     calcres1 := 0.01;//*100
     calcres2 := 100;
  end;
- CalcAccuracyInputLabel1.caption:=floattostr(calcres)+'s';
+ CalcAccuracyInputLabel1.caption:=floattostr(calcres1)+'s';
 end;
 
-procedure TVoltUnitLabel.BeendenClick(Sender: TObject);
+procedure TMainFrame.TabelleClick(Sender: TObject);
 begin
-
-
-  Application.Terminate;
+  ValuetableForm.Show;
 end;
 
-procedure TVoltUnitLabel.ResistorInputChange(Sender: TObject);
-begin
- ResistorUnitLabel.caption:=Inttostr(ResistorInput.position) + 'Ohm';
- CircuitResistor.caption:=Inttostr(ResistorInput.position) + 'Ohm';
-end;
 
-procedure TVoltUnitLabel.TabelleClick(Sender: TObject);
-begin
-  Form3.Show;
-end;
-
-procedure TVoltUnitLabel.UnLoadClick(Sender: TObject);
-begin
-
-end;
 
 
 
@@ -334,9 +330,52 @@ procedure CallLocalProc(AProc, Frame: Pointer; Param1: PtrInt;
 
 var
    tcalc1: TCalculator;
-   zero_load_time: Double;
+   tcalc: TCalculator;
 
-procedure TVoltUnitLabel.LoadUnloadClick(Sender: TObject);
+procedure TMainFrame.UnLoadClick(Sender: TObject);
+begin
+   if not (LoadUnload.Caption = 'Abbrechen') then
+   begin
+       Tabelle.Enabled:=false;
+       Chart1LineSeries1.clear;
+       MainFrame.ChartListbox1.Clear;
+       ValuetableForm.StringGrid1.Clear;
+       Load.Visible:=true;
+       UnLoad.Visible:=false;
+       CircuitSwitch.Caption:='Laden';
+       LoadUnload.Caption:='Entladen';
+   end;
+end;
+
+procedure TMainFrame.LoadClick(Sender: TObject);
+begin
+  if LoadUnload.Enabled then
+  begin
+    if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0) then
+    begin
+    Load.Visible:=false;
+    UnLoad.Visible:=true;
+    CircuitSwitch.Caption:='Entladen';
+    //GetLogicalCpuCount();
+    tcalc:=TCalculator.Create(true);
+    tcalc.TCOnShowStatus := @TCShowStatus;
+    tcalc.FreeOnTerminate:=true;
+    //Max Time Calc.
+    //ln(RES/U_0)*R*C
+    tcalc.PTResistor:=ResistorInput.position;//gg R
+    tcalc.PTCapacity:=CapacityInput.position;//gg C
+    tcalc.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
+    tcalc.PTRes:=calcres;//2 means 0.01
+    tcalc.PTMode:=0;//0 = Max Time Calc
+    tcalc.Start;
+    LoadUnload.Caption:='Abbrechen';
+    end;
+  end;
+end;
+
+
+//Step One, calculate the max calculation count.
+procedure TMainFrame.LoadUnloadClick(Sender: TObject);
 var
  tcalc: TCalculator;
 begin
@@ -344,6 +383,9 @@ begin
  begin
    if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0) then
    begin
+   Load.Visible:=false;
+   UnLoad.Visible:=true;
+   CircuitSwitch.Caption:='Entladen';
    //GetLogicalCpuCount();
    tcalc:=TCalculator.Create(true);
    tcalc.TCOnShowStatus := @TCShowStatus;
@@ -361,18 +403,39 @@ begin
  end
  else if (LoadUnload.Caption = 'Laden') then
  begin
+   Tabelle.Enabled:=false;
    Chart1LineSeries1.clear;
+   MainFrame.ChartListbox1.Clear;
+   ValuetableForm.StringGrid1.Clear;
+   Load.Visible:=true;
+   UnLoad.Visible:=false;
+   CircuitSwitch.Caption:='Laden';
    LoadUnload.Caption:= 'Entladen';
  end
  else if (LoadUnload.Caption = 'Abbrechen') then
  begin
    tcalc1.Terminate;
-   //tcalc1.Free;
    LoadUnload.Caption:= 'Laden';
  end;
 end;
 
-procedure TVoltUnitLabel.TCShowStatus(Result: Double);
+
+procedure TMainFrame.BeendenClick(Sender: TObject);
+begin
+   if (LoadUnload.Caption = 'Abbrechen') then
+   begin
+     tcalc1.Terminate;
+   end;
+  Application.Terminate;
+end;
+
+
+
+
+
+
+//Step two, split the calculations in to threads.
+procedure TMainFrame.TCShowStatus(Result: Double);
 var
  ci : UInt64;
  crstcountpart: UInt64;
@@ -393,16 +456,20 @@ begin
  CPUcores:=[]; //0 .. 63
 
  //ceil(Result) = sekunden bis genauigkeit 0 erreicht ist.
- //Label1.Caption:=floattostr(Result * calcres2);
+ //CreatedBy.Caption:=floattostr(Result * calcres2);
  crs:=ceil(Result*calcres2);//anzahl der endgültigen berechnungen
+
  //Showmessage(inttostr(crs));
  SetLength(ValueTable[1],crs);
  SetLength(ValueTable[2],crs);
- zero_load_time:=Result;//Zeit
+
+ //zero_load_time:=Result;//Zeit
  crsitc:=0;
  crstcountpart:= crs div cpucount;
  crstcountpartrest:= crs mod cpucount;
+
  ShowMessage(Floattostr((crstcountpart * cpucount) + crstcountpartrest));
+
  Chart1.Extent.YMax:=InVoltageInput.position * 12;
  Chart1.Extent.XMax:=Result;
 
@@ -418,6 +485,7 @@ begin
    tcalc1.PTVoltage:=InVoltageInput.position * 12;//gg  U_0
    tcalc1.PTRes:=ci;
    tcalc1.PTRes0:=calcres1;
+   tcalc1.PTRes1:=calcres;
    tcalc1.PTMode:=1;
    tcalc1.PTCountPart:=crstcountpart;
    tcalc1.PTRestCountPart:=crstcountpartrest;
@@ -425,38 +493,63 @@ begin
  end;
 end;
 
-procedure TVoltUnitLabel.TCShowStatus1(Result: Double; t: Double);
+
+
+
+
+
+
+
+
+
+
+//Step three, take the results.
+procedure TMainFrame.TCShowStatus1(Result: Double; t: Double);
 var
  i:UInt64;
 begin
    crsitc:=crsitc + 1;
    ValueTable[1][ceil(t)]:=t * calcres1;//Zeitpunkt
    ValueTable[2][ceil(t)]:=Result;//Ladungswert
-  // Label2.Caption:=floattostrf(crsitc / (crs / 100), fffixed, 4, 0);
-   Application.ProcessMessages;
+  CalcPercentage.Caption:=floattostrf(crsitc / (crs / 100), fffixed, 4, 0) + '%';
+  Application.ProcessMessages;
+
+
    if crsitc = crs then
    begin
-     //ShowMessage('Fertig');
+     ValuetableForm.StringGrid1.ColCount:=crsitc;
+     ValuetableForm.StringGrid1.RowCount:=3;
+     ValuetableForm.StringGrid1.Cells[0, 0]:='T in s';
+     ValuetableForm.StringGrid1.Cells[0, 1]:='V in v';
+     ValuetableForm.StringGrid1.Cells[0, 2]:='C in F';
+     if CheckBox1.Checked
+     then Chart1.DisableRedrawing;
      for i:= 0 to High(ValueTable[1]) - 1 do
      begin
       if not (LoadUnload.Caption = 'Laden') then
       begin
         Chart1LineSeries1.AddXY(ValueTable[1][i],ValueTable[2][i]);
+        ValuetableForm.StringGrid1.Cells[i + 1, 0]:=Floattostr(ValueTable[1][i]);
+        ValuetableForm.StringGrid1.Cells[i + 1, 1]:=Floattostr(ValueTable[2][i]);
+        ValuetableForm.StringGrid1.Cells[i + 1, 2]:=Floattostr(ValueTable[2][i]);
         Application.ProcessMessages;
       end;
      end;
+     if CheckBox1.Checked
+     then Chart1.EnableRedrawing;
+     Chart1.Repaint;
+     Tabelle.Enabled:=true;
      if not (LoadUnload.Caption = 'Laden') then
      begin
-      //Chart1LineSeries1.AddXY(zero_load_time, 0);
+      CalcPercentage.Caption:='';
       LoadUnload.Caption:='Laden';
-
      end;
    end;
 end;
 
 
 
-procedure TVoltUnitLabel.HelpClick(Sender: TObject);
+procedure TMainFrame.HelpClick(Sender: TObject);
 begin
 
 end;

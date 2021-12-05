@@ -4,36 +4,39 @@
     <PathDelim Value="\"/>
     <Version Value="11"/>
     <BuildModes Active="Default"/>
-    <Units Count="10">
+    <Units Count="11">
       <Unit0>
         <Filename Value="simulator.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="3" Y="8"/>
-        <UsageCount Value="160"/>
+        <CursorPos X="27" Y="21"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="main.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="VoltUnitLabel"/>
+        <ComponentName Value="MainFrame"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="420"/>
-        <CursorPos X="44" Y="469"/>
-        <UsageCount Value="160"/>
+        <TopLine Value="414"/>
+        <CursorPos X="4" Y="466"/>
+        <UsageCount Value="177"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="helpform.pas"/>
+        <Filename Value="help_form.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form2"/>
+        <ComponentName Value="HelpForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="4"/>
-        <CursorPos X="20" Y="15"/>
-        <UsageCount Value="160"/>
+        <CursorPos X="94" Y="29"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="valuetable.pas"/>
@@ -42,15 +45,15 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="6"/>
-        <UsageCount Value="158"/>
+        <UsageCount Value="175"/>
       </Unit3>
       <Unit4>
         <Filename Value="simthread.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="142"/>
-        <CursorPos X="9" Y="163"/>
-        <UsageCount Value="152"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="90"/>
+        <CursorPos X="19" Y="115"/>
+        <UsageCount Value="169"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -58,164 +61,170 @@
         <UnitName Value="LazTracer"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="50"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="43"/>
       </Unit5>
       <Unit6>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\win\wininc\ascdef.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="217"/>
         <CursorPos X="10" Y="256"/>
-        <UsageCount Value="45"/>
+        <UsageCount Value="43"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1791"/>
         <CursorPos X="15" Y="1827"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="4"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\..\..\..\usr\lib\lazarus\2.0.6\components\lazutils\lazlogger.pas"/>
+        <Filename Value="D:\usr\lib\lazarus\2.0.6\components\lazutils\lazlogger.pas"/>
         <UnitName Value="LazLogger"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="468"/>
         <CursorPos Y="488"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="8"/>
       </Unit8>
       <Unit9>
         <Filename Value="valuetable_form.pas"/>
-        <ComponentName Value="Form3"/>
+        <ComponentName Value="ValuetableForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="6"/>
-        <CursorPos Y="31"/>
-        <UsageCount Value="11"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="18" Y="4"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="C:\lazarus\lcl\grids.pas"/>
+        <UnitName Value="Grids"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="12795"/>
+        <CursorPos Y="12832"/>
+        <UsageCount Value="9"/>
+      </Unit10>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="main.pas"/>
-        <Caret Line="342" Column="2" TopLine="338"/>
+        <Caret Line="480" Column="11" TopLine="425"/>
       </Position1>
       <Position2>
         <Filename Value="main.pas"/>
-        <Caret Line="144" Column="29" TopLine="128"/>
+        <Caret Line="486" Column="6" TopLine="437"/>
       </Position2>
       <Position3>
         <Filename Value="main.pas"/>
-        <Caret Line="411" Column="50" TopLine="369"/>
+        <Caret Line="485" Column="7" TopLine="439"/>
       </Position3>
       <Position4>
         <Filename Value="main.pas"/>
-        <Caret Line="457" Column="7" TopLine="205"/>
+        <Caret Line="476" Column="23" TopLine="439"/>
       </Position4>
       <Position5>
         <Filename Value="main.pas"/>
-        <Caret Line="82" Column="19" TopLine="258"/>
+        <Caret Line="485" Column="12" TopLine="439"/>
       </Position5>
       <Position6>
         <Filename Value="main.pas"/>
-        <Caret Line="243" Column="19" TopLine="218"/>
+        <Caret Line="486" Column="21" TopLine="443"/>
       </Position6>
       <Position7>
         <Filename Value="main.pas"/>
-        <Caret Line="261" Column="99" TopLine="234"/>
+        <Caret Line="487" Column="21" TopLine="444"/>
       </Position7>
       <Position8>
         <Filename Value="main.pas"/>
-        <Caret Line="262" Column="99" TopLine="235"/>
+        <Caret Line="488" Column="21" TopLine="449"/>
       </Position8>
       <Position9>
         <Filename Value="main.pas"/>
-        <Caret Line="261" Column="99" TopLine="234"/>
+        <Caret Line="487" Column="21" TopLine="448"/>
       </Position9>
       <Position10>
         <Filename Value="main.pas"/>
-        <Caret Line="243" Column="3" TopLine="222"/>
+        <Caret Line="483" Column="58" TopLine="446"/>
       </Position10>
       <Position11>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="29" Column="11" TopLine="4"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="173" TopLine="117"/>
       </Position11>
       <Position12>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="30" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="483" Column="57" TopLine="446"/>
       </Position12>
       <Position13>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="32" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="484" Column="64" TopLine="446"/>
       </Position13>
       <Position14>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="31" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="477" Column="36" TopLine="443"/>
       </Position14>
       <Position15>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="32" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="485" Column="50" TopLine="443"/>
       </Position15>
       <Position16>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="33" Column="11" TopLine="4"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="181" Column="96" TopLine="117"/>
       </Position16>
       <Position17>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="34" Column="11" TopLine="4"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="139" Column="18" TopLine="105"/>
       </Position17>
       <Position18>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="33" Column="11" TopLine="4"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="152" Column="17" TopLine="111"/>
       </Position18>
       <Position19>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="32" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="441" Column="11" TopLine="385"/>
       </Position19>
       <Position20>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="31" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="493" Column="34" TopLine="434"/>
       </Position20>
       <Position21>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="32" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="169" Column="74" TopLine="139"/>
       </Position21>
       <Position22>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="31" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="170" Column="26" TopLine="139"/>
       </Position22>
       <Position23>
         <Filename Value="main.pas"/>
-        <Caret Column="6" TopLine="241"/>
+        <Caret Line="211" Column="69" TopLine="165"/>
       </Position23>
       <Position24>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="31" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="170" Column="33" TopLine="152"/>
       </Position24>
       <Position25>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="30" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="115" Column="28" TopLine="63"/>
       </Position25>
       <Position26>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="29" Column="11" TopLine="4"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="337" TopLine="280"/>
       </Position26>
       <Position27>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="30" TopLine="5"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="340" Column="8" TopLine="319"/>
       </Position27>
       <Position28>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="31" TopLine="5"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="369" TopLine="341"/>
       </Position28>
       <Position29>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="32" TopLine="5"/>
+        <Filename Value="main.pas"/>
+        <Caret Line="422" Column="11" TopLine="362"/>
       </Position29>
       <Position30>
-        <Filename Value="valuetable_form.pas"/>
-        <Caret Line="31" TopLine="5"/>
+        <Filename Value="simthread.pas"/>
+        <Caret Line="115" Column="19" TopLine="90"/>
       </Position30>
     </JumpHistory>
     <RunParams>

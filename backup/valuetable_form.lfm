@@ -1,13 +1,13 @@
 object ValuetableForm: TValuetableForm
-  Left = 2286
+  Left = 2504
   Height = 111
-  Top = 1193
-  Width = 852
+  Top = 1198
+  Width = 859
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Wertetabelle'
   ClientHeight = 111
-  ClientWidth = 852
+  ClientWidth = 859
   DesignTimePPI = 120
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000

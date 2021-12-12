@@ -17,21 +17,39 @@ uses
   {$linklib c}
   ctypes,
   {$ENDIF}
-  Classes, Dialogs, SysUtils, Math, StdCtrls, LazLogger;
+  Classes, Dialogs, SysUtils, Math, StdCtrls, LazLogger, DateUtils;
 
 
 type
-  TShowStatusEvent = procedure(Status: String) of Object;
+  TShowStatusEvent = procedure(Status1: String; Status2: String; Status3: String) of Object;
   TSimmulation = class(TThread)
   private
-    fStatusText : string;
+    fStatusText : array[1..3] of String;
     FOnShowStatus: TShowStatusEvent;
+
+
+    TSResistor: UInt64;
+    TSCapacity: UInt64;
+    TSVoltage: UInt64;
+    TSRes: Int32;
+    TSRes0: Int32;
+    TSState: Boolean;
+    TSState_time: LongInt;
+
     procedure ShowStatus;
   protected
     procedure Execute; override;
   public
     property OnShowStatus: TShowStatusEvent read FOnShowStatus write FOnShowStatus;
     Constructor Create(CreateSuspended : boolean);
+    property PTSResistor: UInt64 read TSResistor write TSResistor;
+    property PTSCapacity: UInt64 read TSCapacity write TSCapacity;
+    property PTSVoltage: UInt64 read TSVoltage write TSVoltage;
+    property PTSRes: Int32 read TSRes write TSRes;
+    property PTSRes0: Int32 read TSRes0 write TSRes0;
+    property PTSState: Boolean read TSState write TSState;
+    property PTSState_time: LongInt read TSState_time write TSState_time;
+
   end;
 
   TCShowStatusEvent = procedure(Result: Double) of Object;
@@ -62,9 +80,9 @@ type
   protected
     procedure Execute; override;
   public
+    Constructor Create(CreateSuspended : boolean); //UInt64 same as QWord biggest possible Number Type.
     property TCOnShowStatus: TCShowStatusEvent read FCOnShowStatus write FCOnShowStatus;
     property TCOnShowStatus1: TCShowStatusEvent1 read FCOnShowStatus1 write FCOnShowStatus1;
-    Constructor Create(CreateSuspended : boolean); //UInt64 same as QWord biggest possible Number Type.
     property PTResistor: UInt64 read TResistor write TResistor;
     property PTCapacity: UInt64 read TCapacity write TCapacity;
     property PTVoltage: UInt64 read TVoltage write TVoltage;
@@ -92,23 +110,94 @@ procedure TSimmulation.ShowStatus;
 begin
   if Assigned(FOnShowStatus) then
   begin
-    FOnShowStatus(fStatusText);
+    FOnShowStatus(fStatusText[1], fStatusText[2], fStatusText[3]);
   end;
 end;
 
 procedure TSimmulation.Execute;
 var
-  NewStatus : string;
+  NewStatus : array[1..3] of String;
+  TSSVoltage : Int32 = 0;
+  TSSVoltage_i : Int32 = 0;
+  TSSVoltage_e : Int32 = 0;
+  TSSTimestamp : LongInt;
+  TSSAmpere,TSSColomb: Double;
+  Is_Update : Boolean = false;
+  arrayi: Int32;
+  delay_time: Int32 = 200;
 begin
-  fStatusText:='moin';
-  Synchronize(@Showstatus);
+
+  //TSState_time == timestamp in ms
+  TSSTimestamp:=Round((DateTimeToUnix(Now) - TSState_time) / 1000);
+
+
+  //fStatusText:='moin';
+  //Synchronize(@Showstatus);
   while (not Terminated) do
   begin
-    if NewStatus <> fStatusText then
+    //[1]
+    if not TSSVoltage = TSVoltage then
+    begin
+
+      TSSVoltage_i:= TSSVoltage_i + 1;
+
+      //((10s * 1000) / delay_time) == TSSVoltage_i
+
+      TSSVoltage_e:=Round(TSSVoltage_i*((TSVoltage - TSSVoltage) / ((1000 * 1000) / delay_time)));
+
+      //TSSVoltage := Round(Power(time, 2) * );
+    end
+    else
+    begin
+      TSSVoltage_e := TSVoltage;
+      TSSVoltage_i:=0;
+    end;
+
+    //NewStatus [1] = TSVoltage
+    //[1]
+    NewStatus[1]:=floattostrf(TSSVoltage_e, fffixed, 10, 0) + 'V';
+
+    //NewStatus [2] == TSAmpere
+    //[2]
+    if TSState then //TSState Entladen:Laden
+    begin
+     //TSState_time == timestamp in ms
+
+     //I(t) in A = -(U_0*e^-(t/(r*c))/r)
+     TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSState_time / 1000)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
+     NewStatus[2]:=floattostrf(TSSAmpere, fffixed, 6, TSRes) + 'A';
+    end
+    else
+    begin
+     NewStatus[2]:='NA';
+    end;
+
+    //NewStatus [3] == TSColomb
+    //[3]
+    if TSState then //TSState Entladen:Laden
+    begin
+
+     //C in F = -(t/ln(U_0*e^-(t/(r*c))/U_0)*r)
+     TSSColomb:=RoundTo(-(TSSTimestamp/(ln((TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSVoltage)*TSResistor)), -TSRes);
+     NewStatus[3]:=floattostrf(TSSColomb, fffixed, 6, TSRes) + 'F';
+    end
+    else
+    begin
+     NewStatus[3]:='NA';
+    end;
+
+    for arrayi:=1 to 3 do
+    begin
+      if not (fStatusText[arrayi] = NewStatus[arrayi]) then
       begin
-        //fStatusText := newStatus;
-        //Synchronize(@Showstatus);
+        fStatusText[arrayi]:= NewStatus[arrayi];
+        Is_Update := true;
       end;
+    end;
+    if Is_Update then Synchronize(@Showstatus);
+    Is_Update := false;
+    sleep(delay_time);
+
   end;
 end;
 
@@ -147,11 +236,11 @@ begin
  //TRes//
  //TMode//Max Time Calc
   //SetThreadAffinty(0);
-  if(TRes0 = 0.01)
+  if(TRes1 = 0.01)
   then roundtoi:=2
-  else if(TRes0 = 0.001)
+  else if(TRes1 = 0.001)
   then roundtoi:=3
-  else if(TRes0 = 0.1)
+  else if(TRes1 = 0.1)
   then roundtoi:=1
   else roundtoi:=0;
 

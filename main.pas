@@ -15,7 +15,7 @@ uses
   {$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
   ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, TAChartListbox, Math,
-  Process, LazLogger, INIFiles;
+  Process, LazLogger, INIFiles, DateUtils;
 
 
 
@@ -36,7 +36,7 @@ type
     Circuit: TImage;
     CircuitTitle: TLabel;
     CircuitMessuredVoltage: TLabel;
-    CircuitMeasuredCurrent: TLabel;
+    CircuitMessuredCurrent: TLabel;
     CircuitResistor: TLabel;
     CircuitVolt: TLabel;
     CalcAccuracyInputLabel: TLabel;
@@ -45,7 +45,6 @@ type
     CreatedBy: TLabel;
     CalcPercentage: TLabel;
     Label4: TLabel;
-    Label7: TLabel;
     CircuitSwitch: TLabel;
     CalcAccuracyLabel: TLabel;
     Beenden: TButton;
@@ -87,7 +86,7 @@ type
     procedure UnLoadClick(Sender: TObject);
   private
     ValueTable: array[1..2] of array of Double;
-    procedure ShowStatus(Status: string);
+    procedure ShowStatus(Status1: String; Status2: String; Status3: String);
     procedure TCShowStatus(Result: Double);
     procedure TCShowStatus1(Result: Double; t: Double);
   public
@@ -110,11 +109,12 @@ uses simthread, valuetable_form;
 
 {$R *.lfm}
 
+var
+   tsim: TSimmulation;
 
 
 procedure TMainFrame.FormCreate(Sender: TObject);
 var
- tsim: TSimmulation;
  SAVE_TEST: String;
 begin
  //SetProcessAffinityMask(ProcInfo.hProcess, 0);
@@ -143,6 +143,16 @@ begin
  // Start Circuit simulation.
  tsim:=TSimmulation.Create(true);
  tsim.OnShowStatus := @ShowStatus;
+ tsim.PTSCapacity:=CapacityInput.position;//gg C
+ tsim.PTSState_time:=DateTimeToUnix(Now);
+ tsim.PTSResistor:=ResistorInput.position;
+ tsim.PTSCapacity:=CapacityInput.position;
+ tsim.PTSVoltage:=Round(InVoltageInput.position * 12);
+ tsim.PTSRes:=CalcAccuracyInput.position;
+ tsim.PTSRes0:=CalcAccuracyInput1.position;
+ tsim.PTSState:=false;
+
+
  tsim.FreeOnTerminate:=true;
  tsim.Resume;
 
@@ -150,12 +160,12 @@ begin
  SAVE.WriteString('HIHO', 'test', '234.2434');
 end;
 
-
-
 // Update Dynamic UI
-procedure TMainFrame.ShowStatus(Status: string);
+procedure TMainFrame.ShowStatus(Status1: String; Status2: String; Status3: String);
 begin
- CircuitVolt.Caption := Status;
+ CircuitMessuredVoltage.Caption := Status1;
+ CapacitorCapacity.Caption := Status3;
+ CircuitMessuredCurrent.Caption := Status2;
 end;
 
 
@@ -168,6 +178,7 @@ begin
  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0)
  then LoadUnload.Enabled:=true
  else LoadUnload.Enabled:=false;
+ tsim.PTSVoltage:=Round(InVoltageInput.position * 12);
 end;
 
 procedure TMainFrame.CapacityInputChange(Sender: TObject);
@@ -343,6 +354,7 @@ begin
        Load.Visible:=true;
        UnLoad.Visible:=false;
        CircuitSwitch.Caption:='Laden';
+       tsim.PTSState:=false;
        LoadUnload.Caption:='Entladen';
    end;
 end;
@@ -356,6 +368,7 @@ begin
     Load.Visible:=false;
     UnLoad.Visible:=true;
     CircuitSwitch.Caption:='Entladen';
+    tsim.PTSState:=true;
     //GetLogicalCpuCount();
     tcalc:=TCalculator.Create(true);
     tcalc.TCOnShowStatus := @TCShowStatus;
@@ -386,6 +399,7 @@ begin
    Load.Visible:=false;
    UnLoad.Visible:=true;
    CircuitSwitch.Caption:='Entladen';
+   tsim.PTSState:=true;
    //GetLogicalCpuCount();
    tcalc:=TCalculator.Create(true);
    tcalc.TCOnShowStatus := @TCShowStatus;
@@ -409,7 +423,10 @@ begin
    ValuetableForm.StringGrid1.Clear;
    Load.Visible:=true;
    UnLoad.Visible:=false;
-   CircuitSwitch.Caption:='Laden';
+
+
+   .Caption:='Laden';
+   tsim.PTSState:=false;
    LoadUnload.Caption:= 'Entladen';
  end
  else if (LoadUnload.Caption = 'Abbrechen') then

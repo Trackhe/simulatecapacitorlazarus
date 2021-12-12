@@ -1,7 +1,7 @@
 object MainFrame: TMainFrame
-  Left = 2628
+  Left = 2280
   Height = 961
-  Top = 171
+  Top = 175
   Width = 1029
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
@@ -3166,15 +3166,6 @@ object MainFrame: TMainFrame
     ParentColor = False
     ParentFont = False
   end
-  object Label7: TLabel
-    Left = 688
-    Height = 20
-    Top = 298
-    Width = 30
-    Caption = 'NAC'
-    ParentColor = False
-    ParentFont = False
-  end
   object CircuitSwitch: TLabel
     Left = 704
     Height = 20
@@ -3225,7 +3216,7 @@ object MainFrame: TMainFrame
     ParentColor = False
     ParentFont = False
   end
-  object CircuitMeasuredCurrent: TLabel
+  object CircuitMessuredCurrent: TLabel
     Left = 968
     Height = 20
     Top = 140

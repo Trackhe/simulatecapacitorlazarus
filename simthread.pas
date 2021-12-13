@@ -117,24 +117,26 @@ end;
 procedure TSimmulation.Execute;
 var
   NewStatus : array[1..3] of String;
-  TSSVoltage : Int32 = 0;
-  TSSVoltage_i : Int32 = 0;
-  TSSVoltage_e : Int32 = 0;
-  TSSTimestamp : LongInt;
-  TSSAmpere,TSSColomb: Double;
+  TSSVoltage,TSSVoltage_i,TSSVoltage_e : Int64;
+  TSSTimestamp,TSSTimestamp_v : LongInt;
+  TSSAmpere,TSSLadung,TSSLadung_e: Double;
   Is_Update : Boolean = false;
   arrayi: Int32;
   delay_time: Int32 = 200;
 begin
-
-  //TSState_time == timestamp in ms
-  TSSTimestamp:=Round((DateTimeToUnix(Now) - TSState_time) / 1000);
 
 
   //fStatusText:='moin';
   //Synchronize(@Showstatus);
   while (not Terminated) do
   begin
+
+  //TSState_time == timestamp in ms
+  TSSTimestamp_v:=(floor(ln(TSVoltage)*TSResistor*TSCapacity) - Round((DateTimeToUnix(Now) - TSState_time)));
+  if(TSSTimestamp_v <= 0)
+  then TSSTimestamp := 0
+  else TSSTimestamp := TSSTimestamp_v;
+
     //[1]
     if not TSSVoltage = TSVoltage then
     begin
@@ -163,9 +165,14 @@ begin
     begin
      //TSState_time == timestamp in ms
 
+
+     //A = U/R
+     //U = TVoltage*Power(Exp(1), -((TSSTimestamp)/(TResistor*TCapacity))
+
+
      //I(t) in A = -(U_0*e^-(t/(r*c))/r)
-     TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSState_time / 1000)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
-     NewStatus[2]:=floattostrf(TSSAmpere, fffixed, 6, TSRes) + 'A';
+     TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
+     NewStatus[2]:=floattostrf(TSVoltage+TSSAmpere, fffixed, 6, TSRes) + 'A';
     end
     else
     begin
@@ -178,8 +185,12 @@ begin
     begin
 
      //C in F = -(t/ln(U_0*e^-(t/(r*c))/U_0)*r)
-     TSSColomb:=RoundTo(-(TSSTimestamp/(ln((TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSVoltage)*TSResistor)), -TSRes);
-     NewStatus[3]:=floattostrf(TSSColomb, fffixed, 6, TSRes) + 'F';
+     TSSLadung:=RoundTo(-(TSSTimestamp/(ln((TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSVoltage)*TSResistor)), -2);
+
+     if(TSSLadung <= 0) then TSSLadung_e := 0
+     else TSSLadung_e := TSSLadung;
+
+     NewStatus[3]:=floattostrf(TSSLadung_e, fffixed, 6, TSRes) + '/' + inttostr(TSCapacity) + 'F';
     end
     else
     begin

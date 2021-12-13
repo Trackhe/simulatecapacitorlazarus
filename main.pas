@@ -179,6 +179,15 @@ begin
  then LoadUnload.Enabled:=true
  else LoadUnload.Enabled:=false;
  tsim.PTSVoltage:=Round(InVoltageInput.position * 12);
+ tsim.PTSState_time:=DateTimeToUnix(Now);
+   Chart1LineSeries1.clear;
+   MainFrame.ChartListbox1.Clear;
+   ValuetableForm.StringGrid1.Clear;
+   Load.Visible:=true;
+   UnLoad.Visible:=false;
+   CircuitSwitch.Caption:='Laden';
+   tsim.PTSState:=false;
+   LoadUnload.Caption:= 'Entladen';
 end;
 
 procedure TMainFrame.CapacityInputChange(Sender: TObject);
@@ -188,6 +197,16 @@ begin
  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0)
  then LoadUnload.Enabled:=true
  else LoadUnload.Enabled:=false;
+ tsim.PTSCapacity:=Round(CapacityInput.position);
+ tsim.PTSState_time:=DateTimeToUnix(Now);
+   Chart1LineSeries1.clear;
+   MainFrame.ChartListbox1.Clear;
+   ValuetableForm.StringGrid1.Clear;
+   Load.Visible:=true;
+   UnLoad.Visible:=false;
+   CircuitSwitch.Caption:='Laden';
+   tsim.PTSState:=false;
+   LoadUnload.Caption:= 'Entladen';
 end;
 
 procedure TMainFrame.ResistorInputChange(Sender: TObject);
@@ -197,6 +216,16 @@ begin
  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0)
  then LoadUnload.Enabled:=true
  else LoadUnload.Enabled:=false;
+ tsim.PTSResistor:=Round(ResistorInput.position);
+ tsim.PTSState_time:=DateTimeToUnix(Now);
+   Chart1LineSeries1.clear;
+   MainFrame.ChartListbox1.Clear;
+   ValuetableForm.StringGrid1.Clear;
+   Load.Visible:=true;
+   UnLoad.Visible:=false;
+   CircuitSwitch.Caption:='Laden';
+   tsim.PTSState:=false;
+   LoadUnload.Caption:= 'Entladen';
 end;
 
 procedure TMainFrame.CalcAccuracyInputChange(Sender: TObject);
@@ -347,7 +376,6 @@ procedure TMainFrame.UnLoadClick(Sender: TObject);
 begin
    if not (LoadUnload.Caption = 'Abbrechen') then
    begin
-       Tabelle.Enabled:=false;
        Chart1LineSeries1.clear;
        MainFrame.ChartListbox1.Clear;
        ValuetableForm.StringGrid1.Clear;
@@ -417,15 +445,12 @@ begin
  end
  else if (LoadUnload.Caption = 'Laden') then
  begin
-   Tabelle.Enabled:=false;
    Chart1LineSeries1.clear;
    MainFrame.ChartListbox1.Clear;
    ValuetableForm.StringGrid1.Clear;
    Load.Visible:=true;
    UnLoad.Visible:=false;
-
-
-   .Caption:='Laden';
+   CircuitSwitch.Caption:='Laden';
    tsim.PTSState:=false;
    LoadUnload.Caption:= 'Entladen';
  end
@@ -555,7 +580,6 @@ begin
      if CheckBox1.Checked
      then Chart1.EnableRedrawing;
      Chart1.Repaint;
-     Tabelle.Enabled:=true;
      if not (LoadUnload.Caption = 'Laden') then
      begin
       CalcPercentage.Caption:='';

@@ -14,8 +14,8 @@ uses
   ctypes,
   {$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, TAChartListbox, Math,
-  Process, LazLogger, INIFiles, DateUtils;
+  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, TAChartListbox,
+  TAFuncSeries, Math, Process, LazLogger, INIFiles, DateUtils;
 
 type
 
@@ -27,6 +27,8 @@ type
     CalcAccuracyInput1: TTrackBar;
     CalcAccuracyInputLabel1: TLabel;
     Chart1: TChart;
+    Chart1BSplineSeries1: TBSplineSeries;
+    Chart1CubicSplineSeries1: TCubicSplineSeries;
     Chart1LineSeries1: TLineSeries;
     ChartListbox1: TChartListbox;
     CheckBox1: TCheckBox;
@@ -492,6 +494,8 @@ begin
      end else if (LoadUnload.Caption = 'Laden') then
      begin
       Chart1LineSeries1.Clear;
+      Chart1BSplineSeries1.Clear;
+      Chart1CubicSplineSeries1.Clear;
       MainFrame.ChartListbox1.Clear;
       ValuetableForm.StringGrid1.Clear;
       Load.Visible := True;
@@ -634,7 +638,9 @@ begin
 
       if (LoadUnload.Caption = 'Abbrechen') and not terminate then
       begin
-        Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
+        //Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
+        Chart1BSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
+        //Chart1CubicSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
         ValuetableForm.StringGrid1.Cells[i + 1, 0] := Floattostr(ValueTable[1][i]);
         ValuetableForm.StringGrid1.Cells[i + 1, 1] := Floattostr(ValueTable[2][i]);
         ValuetableForm.StringGrid1.Cells[i + 1, 2] := Floattostr(ValueTable[2][i]);

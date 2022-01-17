@@ -3304,6 +3304,10 @@ object MainFrame: TMainFrame
     DragMode = dmAutomatic
     object Chart1LineSeries1: TLineSeries
     end
+    object Chart1BSplineSeries1: TBSplineSeries
+    end
+    object Chart1CubicSplineSeries1: TCubicSplineSeries
+    end
   end
   object Beenden: TButton
     Left = 96

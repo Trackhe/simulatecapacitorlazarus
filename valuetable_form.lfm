@@ -1,14 +1,13 @@
 object ValuetableForm: TValuetableForm
-  Left = 3932
-  Height = 110
-  Top = 1498
-  Width = 858
+  Left = 1215
+  Height = 88
+  Top = 906
+  Width = 686
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Wertetabelle'
-  ClientHeight = 110
-  ClientWidth = 858
-  DesignTimePPI = 120
+  ClientHeight = 88
+  ClientWidth = 686
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000
     0000000100000100200000000000000001006400000064000000000000000000
@@ -2128,15 +2127,15 @@ object ValuetableForm: TValuetableForm
   }
   OnCreate = FormCreate
   Position = poDesktopCenter
-  LCLVersion = '2.0.12.0'
+  LCLVersion = '2.0.6.0'
   object StringGrid1: TStringGrid
     Left = -1
-    Height = 110
+    Height = 88
     Top = 0
-    Width = 860
+    Width = 688
     ColCount = 1
-    DefaultColWidth = 54
-    DefaultRowHeight = 29
+    DefaultColWidth = 43
+    DefaultRowHeight = 23
     ExtendedSelect = False
     FixedRows = 0
     Flat = True

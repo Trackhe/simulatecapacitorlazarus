@@ -41,10 +41,8 @@ type
     CircuitVolt: TLabel;
     CalcAccuracyInputLabel: TLabel;
 
-    CapacitorCapacity: TLabel;
     CreatedBy: TLabel;
     CalcPercentage: TLabel;
-    Label4: TLabel;
     CircuitSwitch: TLabel;
     CalcAccuracyLabel: TLabel;
     Beenden: TButton;
@@ -111,6 +109,7 @@ type
   public
     Debug: Boolean;
     TableIsLoaded:Boolean;
+    terminate: Boolean;
 
   end;
 
@@ -140,7 +139,7 @@ var
 
 procedure TMainFrame.FormCreate(Sender: TObject);
 begin
-
+  terminate:=false;
 
 
 
@@ -206,7 +205,7 @@ begin
   tsim.PTSState_time := DateTimeToUnix(Now);
   tsim.PTSResistor := ResistorInput.position;
   tsim.PTSCapacity := CapacityInput.position;
-  tsim.PTSVoltage := Round(InVoltageInput.position * 12);
+  tsim.PTSVoltage := Round(InVoltageInput.position);
   tsim.PTSRes := CalcAccuracyInput.position;
   tsim.PTSRes0 := CalcAccuracyInput1.position;
   tsim.PTSState := False;
@@ -220,9 +219,9 @@ end;
 procedure TMainFrame.ShowStatus(Status1: string; Status2: string; Status3: string; Status4: string);
 begin
   CircuitMessuredVoltage.Caption := Status1;
-  CapacitorCapacity.Caption := Status3;
-  Label4.Caption:=Status4;
-  CircuitMessuredCurrent.Caption := Status2;
+  //CapacitorCapacity.Caption := Status3;
+  //Label4.Caption:=Status4;
+  //CircuitMessuredCurrent.Caption := Status2;
 end;
 
 
@@ -271,8 +270,8 @@ end;
 procedure TMainFrame.InVoltageInputChangeOperation;
 begin
   SAVE.WriteInteger('SimulationSettings', 'InputVoltage', InVoltageInput.position);
-  VoltageUnitLabel.Caption := IntToStr(InVoltageInput.position * 12) + 'V';
-  CircuitVolt.Caption := IntToStr(InVoltageInput.position * 12) + 'V';
+  VoltageUnitLabel.Caption := IntToStr(InVoltageInput.position) + 'V';
+  CircuitVolt.Caption := IntToStr(InVoltageInput.position) + 'V';
 
   if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
     not (InVoltageInput.position = 0) then
@@ -284,7 +283,7 @@ begin
   begin
    CancelProzess;
   end;
-  tsim.PTSVoltage := Round(InVoltageInput.position * 12);
+  tsim.PTSVoltage := Round(InVoltageInput.position);
   tsim.PTSState_time := DateTimeToUnix(Now);
 
 
@@ -303,7 +302,7 @@ procedure TMainFrame.CapacityInputChangeOperation;
 begin
   SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacity', CapacityInput.position);
   CapacityUnitLabel.Caption := IntToStr(CapacityInput.position) + 'F';
-  CapacitorCapacity.Caption := IntToStr(CapacityInput.position) + 'F';
+  //CapacitorCapacity.Caption := IntToStr(CapacityInput.position) + 'F';
 
   if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
     not (InVoltageInput.position = 0) then
@@ -485,7 +484,7 @@ begin
         //ln(RES/U_0)*R*C
         tcalc.PTResistor := ResistorInput.position;//gg R
         tcalc.PTCapacity := CapacityInput.position;//gg C
-        tcalc.PTVoltage := InVoltageInput.position * 12;//gg  U_0
+        tcalc.PTVoltage := InVoltageInput.position;//gg  U_0
         tcalc.PTRes := calcres;//2 means 0.01
         tcalc.PTMode := 0;//0 = Max Time Calc
         tcalc.Start;
@@ -515,6 +514,7 @@ end;
 
 procedure TMainFrame.BeendenClick(Sender: TObject);
 begin
+  terminate:=true;
   if (LoadUnload.Caption = 'Abbrechen') then
   begin
     tcalc1.Terminate;
@@ -565,7 +565,7 @@ begin
   if Debug then debugln('Calculations Parts: ' + Inttostr(cpucount));
   if Debug then debugln(Floattostr((crstcountpart * cpucount) + crstcountpartrest) + ':' + Inttostr(crs));
 
-  Chart1.Extent.YMax := InVoltageInput.position * 12;
+  Chart1.Extent.YMax := InVoltageInput.position;
   Chart1.Extent.XMax := Result;
 
   for ci := 1 to cpucount do //CPU Core Count
@@ -577,7 +577,7 @@ begin
     tcalc1.FreeOnTerminate := True;
     tcalc1.PTResistor := ResistorInput.position;//gg R
     tcalc1.PTCapacity := CapacityInput.position;//gg C
-    tcalc1.PTVoltage := InVoltageInput.position * 12;//gg  U_0
+    tcalc1.PTVoltage := InVoltageInput.position;//gg  U_0
     tcalc1.PTRes := ci;
     tcalc1.PTRes0 := calcres1;
     tcalc1.PTRes1 := calcres;
@@ -632,7 +632,7 @@ begin
         chartdrawing:=true;
       end;
 
-      if (LoadUnload.Caption = 'Abbrechen') then
+      if (LoadUnload.Caption = 'Abbrechen') and not terminate then
       begin
         Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
         ValuetableForm.StringGrid1.Cells[i + 1, 0] := Floattostr(ValueTable[1][i]);
@@ -668,7 +668,11 @@ end;
 
 
 end.
-//Todo: beenden button muss entladungsaufzeichnung beenden und schließen.
+//Todo: Von Strommessung auf Spannungsmessung
+//Help Site
+//Kreise mit plus Minus als Spannungsquelle
+//Slider anpassen.
+//Kapazotätsslider von 0F bis 1F
 
 
 

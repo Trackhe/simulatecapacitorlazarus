@@ -1,7 +1,7 @@
 object MainFrame: TMainFrame
-  Left = 2280
+  Left = 3903
   Height = 961
-  Top = 175
+  Top = 460
   Width = 1029
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
@@ -2135,7 +2135,6 @@ object MainFrame: TMainFrame
     Top = 872
     Width = 110
     Caption = 'Wertetabelle'
-    Enabled = False
     OnClick = TabelleClick
     ParentFont = False
     TabOrder = 0
@@ -2157,6 +2156,7 @@ object MainFrame: TMainFrame
     Top = 872
     Width = 110
     Caption = 'Hilfe'
+    Enabled = False
     OnClick = HelpClick
     ParentFont = False
     TabOrder = 2
@@ -2173,11 +2173,11 @@ object MainFrame: TMainFrame
   end
   object AppSubHeadline: TLabel
     Left = 10
-    Height = 23
+    Height = 25
     Top = 51
-    Width = 231
+    Width = 239
     Caption = 'Entladung eines Kondensators'
-    Font.Height = -17
+    Font.Height = -18
     ParentColor = False
     ParentFont = False
   end
@@ -3087,7 +3087,7 @@ object MainFrame: TMainFrame
   object VoltageUnitLabel: TLabel
     Left = 180
     Height = 20
-    Top = 163
+    Top = 162
     Width = 29
     Caption = 'NAV'
     ParentColor = False
@@ -3114,7 +3114,7 @@ object MainFrame: TMainFrame
   object ResistorUnitLabel: TLabel
     Left = 180
     Height = 20
-    Top = 297
+    Top = 298
     Width = 53
     Caption = 'NAOhm'
     ParentColor = False
@@ -3158,11 +3158,14 @@ object MainFrame: TMainFrame
     ParentFont = False
   end
   object CapacitorCapacity: TLabel
-    Left = 688
+    Left = 687
     Height = 20
-    Top = 280
+    Top = 281
     Width = 28
+    Anchors = [akTop, akRight]
+    BidiMode = bdRightToLeft
     Caption = 'NAF'
+    ParentBidiMode = False
     ParentColor = False
     ParentFont = False
   end
@@ -3210,7 +3213,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyLabel: TLabel
     Left = 10
     Height = 20
-    Top = 530
+    Top = 720
     Width = 167
     Caption = 'Berechnungs Genauigkeit'
     ParentColor = False
@@ -3228,7 +3231,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInput: TTrackBar
     Left = 10
     Height = 46
-    Top = 550
+    Top = 740
     Width = 146
     Max = 3
     OnChange = CalcAccuracyInputChange
@@ -3239,7 +3242,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInputLabel: TLabel
     Left = 160
     Height = 20
-    Top = 573
+    Top = 762
     Width = 26
     Caption = '1.0F'
     ParentColor = False
@@ -3248,7 +3251,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInputLabel1: TLabel
     Left = 162
     Height = 20
-    Top = 619
+    Top = 809
     Width = 25
     Caption = '1.0s'
     ParentColor = False
@@ -3257,7 +3260,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInput1: TTrackBar
     Left = 10
     Height = 46
-    Top = 596
+    Top = 786
     Width = 146
     Max = 3
     OnChange = CalcAccuracyInput1Change
@@ -3266,7 +3269,7 @@ object MainFrame: TMainFrame
     TabOrder = 7
   end
   object Chart1: TChart
-    Left = 247
+    Left = 248
     Height = 451
     Top = 480
     Width = 772
@@ -3339,9 +3342,11 @@ object MainFrame: TMainFrame
   object CheckBox1: TCheckBox
     Left = 10
     Height = 24
-    Top = 648
+    Top = 840
     Width = 85
     Caption = 'FastDraw'
+    OnChange = CheckBox2Change
+    ParentFont = False
     TabOrder = 11
   end
   object CreatedBy: TLabel
@@ -3349,7 +3354,7 @@ object MainFrame: TMainFrame
     Height = 12
     Top = 944
     Width = 190
-    Caption = 'Created by: Michael Nehring 12k1 2021 v1.0'
+    Caption = 'Created by: Michael Nehring 12k1 2022 v1.0'
     Font.Color = 8684676
     Font.Height = -10
     ParentColor = False
@@ -3363,5 +3368,15 @@ object MainFrame: TMainFrame
     Font.Color = 8684676
     ParentColor = False
     ParentFont = False
+  end
+  object CheckBox2: TCheckBox
+    Left = 120
+    Height = 24
+    Top = 840
+    Width = 77
+    Caption = 'Settings'
+    OnChange = CheckBox2Change
+    ParentFont = False
+    TabOrder = 12
   end
 end

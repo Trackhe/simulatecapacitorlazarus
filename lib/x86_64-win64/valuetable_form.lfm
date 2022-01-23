@@ -1,7 +1,7 @@
 object ValuetableForm: TValuetableForm
-  Left = 2313
+  Left = 3932
   Height = 110
-  Top = 1189
+  Top = 1498
   Width = 858
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle

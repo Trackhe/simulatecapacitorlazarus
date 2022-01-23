@@ -14,10 +14,11 @@ type
 
   TValuetableForm = class(TForm)
     StringGrid1: TStringGrid;
+
     procedure FormCreate(Sender: TObject);
     procedure Label1Click(Sender: TObject);
-  private
 
+  private
   public
 
   end;
@@ -36,6 +37,7 @@ uses main;
 
 procedure TValuetableForm.FormCreate(Sender: TObject);
 begin
+     MainFrame.TableIsLoaded:=true;
 
 end;
 

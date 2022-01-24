@@ -14,7 +14,7 @@ uses
   ctypes,
   {$ENDIF}
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, TASources, TAChartCombos, TAGraph, TASeries, TAChartListbox,
+  ComCtrls, Menus, TASources, TAChartCombos, TAGraph, TASeries, TAChartListbox,
   TAFuncSeries, Math, Process, LazLogger, INIFiles, DateUtils;
 
 type
@@ -38,21 +38,22 @@ type
     Circuit: TImage;
     CircuitTitle: TLabel;
     CircuitMessuredVoltage: TLabel;
-    CircuitMessuredCurrent: TLabel;
+    CircuitMessuredCurrent0: TLabel;
     CircuitResistor: TLabel;
     CircuitVolt: TLabel;
     CalcAccuracyInputLabel: TLabel;
+    CapacityInputE: TComboBox;
 
     CreatedBy: TLabel;
     CalcPercentage: TLabel;
     CircuitSwitch: TLabel;
     CalcAccuracyLabel: TLabel;
     Beenden: TButton;
+    CapacityInput: TEdit;
     ResistorUnitLabel: TLabel;
     ResistorLabel: TLabel;
     Load: TImage;
     InVoltageInput: TTrackBar;
-    CapacityInput: TTrackBar;
     ResistorInput: TTrackBar;
     CalcAccuracyInput: TTrackBar;
     UnLoad: TImage;
@@ -66,7 +67,6 @@ type
     AppSubHeadline: TLabel;
     InVoltageLabel: TLabel;
     CapacityLabel: TLabel;
-    CapacityUnitLabel: TLabel;
 
     //All Funktions that called from the Form
     procedure CheckBox1Change(Sender: TObject);
@@ -75,6 +75,7 @@ type
 
     procedure InVoltageInputChange(Sender: TObject);
     procedure CapacityInputChange(Sender: TObject);
+    procedure CapacityUnitInputChange(Sender: TObject);
     procedure ResistorInputChange(Sender: TObject);
     procedure CalcAccuracyInputChange(Sender: TObject);
     procedure CalcAccuracyInput1Change(Sender: TObject);
@@ -98,6 +99,7 @@ type
     procedure SetAccuracyInput1;
     procedure InVoltageInputChangeOperation;
     procedure CapacityInputChangeOperation;
+    procedure CapacityUnitInputChangeOperation;
     procedure ResistorInputChangeOperation;
     procedure SetCheckBox1;
     procedure SetCheckBox2;
@@ -121,6 +123,7 @@ var
   //Setup vars
   //Debug: Boolean;//CheckBox1.Checked
   //Already defined InVoltageInput.position,CapacityInput.position,ResistorInput.position,CalcAccuracyInput.position,CalcAccuracyInput1.position;
+  UnitMultiplicator: Real;
 
   calcres: double;
   calcres1: double;
@@ -163,14 +166,17 @@ begin
   end;
   InVoltageInput.position := SAVE.ReadInteger('SimulationSettings', 'InputVoltage', 0);
   SAVE.WriteInteger('SimulationSettings', 'InputVoltage', InVoltageInput.position);
-  CapacityInput.position := SAVE.ReadInteger('SimulationSettings', 'CapacitorCapacity', 0);
-  SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacity', CapacityInput.position);
+  CapacityInput.caption := Inttostr(SAVE.ReadInteger('SimulationSettings', 'CapacitorCapacity', 0));
+  SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacity', Strtoint(CapacityInput.caption));
+  CapacityInputE.ItemIndex := SAVE.ReadInteger('SimulationSettings', 'CapacitorCapacityUnit', -1);
+  SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacityUnit', CapacityInputE.ItemIndex);
   ResistorInput.position := SAVE.ReadInteger('SimulationSettings', 'DischargeResistor', 0);
   SAVE.WriteInteger('SimulationSettings', 'DischargeResistor', ResistorInput.position);
   if Debug then
   begin
     debugln('SimulationSettings:InputVoltage = ' + Inttostr(InVoltageInput.position));
-    debugln('SimulationSettings:CapacitorCapacity = ' + Inttostr(CapacityInput.position));
+    debugln('SimulationSettings:CapacitorCapacity = ' + CapacityInput.caption);
+    debugln('SimulationSettings:CapacitorCapacityUnit = ' + Inttostr(CapacityInputE.ItemIndex));
     debugln('SimulationSettings:DischargeResistor = ' + Inttostr(ResistorInput.position));
     debugln('SimulationSettings:Settings = ' + Booltostr(CheckBox2.Checked));
   end;
@@ -183,13 +189,14 @@ begin
   if Debug then
   begin
     debugln('DrawSettings:DrawnYPrecison = ' + Inttostr(InVoltageInput.position));
-    debugln('DrawSettings:DrawnXPrecison = ' + Inttostr(CapacityInput.position));
+    debugln('DrawSettings:DrawnXPrecison = ' + Inttostr(CalcAccuracyInput1.position));
     debugln('DrawSettings:FastDraw = ' + Booltostr(CheckBox1.Checked));
   end;
 
   //Be sure all variables are Updated
   InVoltageInputChangeOperation;
   CapacityInputChangeOperation;
+  CapacityUnitInputChangeOperation;
   ResistorInputChangeOperation;
   SetAccuracyInput;
   SetAccuracyInput1;
@@ -203,10 +210,9 @@ begin
 
   //Start circuit simulation.
   tsim.OnShowStatus := @ShowStatus;
-  tsim.PTSCapacity := CapacityInput.position;
   tsim.PTSState_time := DateTimeToUnix(Now);
   tsim.PTSResistor := ResistorInput.position;
-  tsim.PTSCapacity := CapacityInput.position;
+  tsim.PTSCapacity := Strtoint(CapacityInput.caption) * UnitMultiplicator;
   tsim.PTSVoltage := Round(InVoltageInput.position);
   tsim.PTSRes := CalcAccuracyInput.position;
   tsim.PTSRes0 := CalcAccuracyInput1.position;
@@ -223,7 +229,7 @@ begin
   CircuitMessuredVoltage.Caption := Status1;
   //CapacitorCapacity.Caption := Status3;
   //Label4.Caption:=Status4;
-  //CircuitMessuredCurrent.Caption := Status2;
+  CircuitMessuredCurrent0.Caption := Status2;
 end;
 
 
@@ -238,10 +244,17 @@ begin
   CapacityInputChangeOperation;
 end;
 
+procedure TMainFrameCapacityUnitInputChange(Sender: TObject);
+begin
+  CapacityUnitInputChangeOperation;
+end;
+
 procedure TMainFrame.ResistorInputChange(Sender: TObject);
 begin
   ResistorInputChangeOperation;
 end;
+
+
 
 procedure TMainFrame.CalcAccuracyInputChange(Sender: TObject);
 begin
@@ -276,7 +289,7 @@ begin
   CircuitVolt.Caption := IntToStr(InVoltageInput.position) + 'V';
 
   if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
-    not (InVoltageInput.position = 0) then
+    not (InVoltageInput.position = 0) not (CapacityInputE.ItemIndex = -1) then
     LoadUnload.Enabled := True
   else
     LoadUnload.Enabled := False;
@@ -303,11 +316,11 @@ end;
 procedure TMainFrame.CapacityInputChangeOperation;
 begin
   SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacity', CapacityInput.position);
-  CapacityUnitLabel.Caption := IntToStr(CapacityInput.position) + 'F';
+  //CapacityUnitLabel.Caption := IntToStr(CapacityInput.position) + 'F';
   //CapacitorCapacity.Caption := IntToStr(CapacityInput.position) + 'F';
 
   if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
-    not (InVoltageInput.position = 0) then
+    not (InVoltageInput.position = 0) not (CapacityInputE.ItemIndex = -1) then
     LoadUnload.Enabled := True
   else
     LoadUnload.Enabled := False;
@@ -316,7 +329,43 @@ begin
   begin
    CancelProzess;
   end;
-  tsim.PTSCapacity := Round(CapacityInput.position);
+
+
+
+  tsim.PTSCapacity := Strtoint(CapacityInput.caption) * UnitMultiplicator;
+  tsim.PTSState_time := DateTimeToUnix(Now);
+
+  Load.Visible := True;
+  UnLoad.Visible := False;
+  CircuitSwitch.Caption := 'Laden';
+  tsim.PTSState := False;
+  LoadUnload.Caption := 'Entladen';
+
+  Chart1LineSeries1.Clear;
+  MainFrame.ChartListbox1.Clear;
+  if TableIsLoaded then ValuetableForm.StringGrid1.Clear;
+end;
+
+procedure TMainFrame.CapacityUnitInputChangeOperation;
+begin
+  SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacityUnit', CapacityInputE.ItemIndex);
+  //CapacityUnitLabel.Caption := IntToStr(CapacityInput.position) + 'F';
+  //CapacitorCapacity.Caption := IntToStr(CapacityInput.position) + 'F';
+
+  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
+    not (InVoltageInput.position = 0) and not (CapacityInputE.ItemIndex = -1) then
+    LoadUnload.Enabled := True
+  else
+    LoadUnload.Enabled := False;
+
+  if (LoadUnload.Caption = 'Abbrechen') then
+  begin
+   CancelProzess;
+  end;
+
+
+
+  tsim.PTSCapacity := Strtoint(CapacityInput.caption) * UnitMultiplicator;
   tsim.PTSState_time := DateTimeToUnix(Now);
 
   Load.Visible := True;
@@ -337,7 +386,7 @@ begin
   CircuitResistor.Caption := IntToStr(ResistorInput.position) + 'Ohm';
 
   if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
-    not (InVoltageInput.position = 0) then
+    not (InVoltageInput.position = 0) not (CapacityInputE.ItemIndex = -1) then
     LoadUnload.Enabled := True
   else
     LoadUnload.Enabled := False;

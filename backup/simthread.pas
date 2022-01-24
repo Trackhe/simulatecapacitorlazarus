@@ -21,10 +21,10 @@ uses
 
 
 type
-  TShowStatusEvent = procedure(Status1: String; Status2: String; Status3: String) of Object;
+  TShowStatusEvent = procedure(Status1: String; Status2: String; Status3: String; String4: String) of Object;
   TSimmulation = class(TThread)
   private
-    fStatusText : array[1..3] of String;
+    fStatusText : array[1..4] of String;
     FOnShowStatus: TShowStatusEvent;
 
 
@@ -110,31 +110,33 @@ procedure TSimmulation.ShowStatus;
 begin
   if Assigned(FOnShowStatus) then
   begin
-    FOnShowStatus(fStatusText[1], fStatusText[2], fStatusText[3]);
+    FOnShowStatus(fStatusText[1], fStatusText[2], fStatusText[3], fStatusText[4]);
   end;
 end;
 
 procedure TSimmulation.Execute;
 var
-  NewStatus : array[1..3] of String;
-  TSSVoltage : Int32 = 0;
-  TSSVoltage_i : Int32 = 0;
-  TSSVoltage_e : Int32 = 0;
-  TSSTimestamp : LongInt;
-  TSSAmpere,TSSColomb: Double;
+  NewStatus : array[1..4] of String;
+  TSSVoltage,TSSVoltage_i,TSSVoltage_e : Int64;
+  TSSTimestamp,TSSTimestamp_v : LongInt;
+  TSSAmpere,TSSLadung,TSSLadung_e: Double;
   Is_Update : Boolean = false;
   arrayi: Int32;
   delay_time: Int32 = 200;
 begin
-
-  //TSState_time == timestamp in ms
-  TSSTimestamp:=Round((DateTimeToUnix(Now) - TSState_time) / 1000);
 
 
   //fStatusText:='moin';
   //Synchronize(@Showstatus);
   while (not Terminated) do
   begin
+
+  //TSState_time == timestamp in ms
+  TSSTimestamp_v:=(floor(ln(TSVoltage)*TSResistor*TSCapacity) - Round((DateTimeToUnix(Now) - TSState_time)));
+  if(TSSTimestamp_v <= 0)
+  then TSSTimestamp := 0
+  else TSSTimestamp := TSSTimestamp_v;
+
     //[1]
     if not TSSVoltage = TSVoltage then
     begin
@@ -143,7 +145,7 @@ begin
 
       //((10s * 1000) / delay_time) == TSSVoltage_i
 
-      TSSVoltage_e:=Round(TSSVoltage_i*((TSVoltage - TSSVoltage) / ((1000 * 1000) / delay_time)));
+      TSSVoltage_e:=Round(  TSSVoltage_i *  (  (TSVoltage - TSSVoltage) / ((1000 * 1000) / delay_time)  ));
 
       //TSSVoltage := Round(Power(time, 2) * );
     end
@@ -163,9 +165,14 @@ begin
     begin
      //TSState_time == timestamp in ms
 
+
+     //A = U/R
+     //U = TVoltage*Power(Exp(1), -((TSSTimestamp)/(TResistor*TCapacity))
+
+
      //I(t) in A = -(U_0*e^-(t/(r*c))/r)
-     TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSState_time / 1000)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
-     NewStatus[2]:=floattostrf(TSSAmpere, fffixed, 6, TSRes) + 'A';
+     TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
+     NewStatus[2]:=floattostrf(TSVoltage+TSSAmpere, fffixed, 6, TSRes) + 'A';
     end
     else
     begin
@@ -178,15 +185,33 @@ begin
     begin
 
      //C in F = -(t/ln(U_0*e^-(t/(r*c))/U_0)*r)
-     TSSColomb:=RoundTo(-(TSSTimestamp/(ln((TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSVoltage)*TSResistor)), -TSRes);
-     NewStatus[3]:=floattostrf(TSSColomb, fffixed, 6, TSRes) + 'F';
+     TSSLadung:=RoundTo(-(TSSTimestamp/(ln((TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSVoltage)*TSResistor)), -2);
+
+     if(TSSLadung <= 0) then TSSLadung_e := 0
+     else TSSLadung_e := TSSLadung;
+
+     NewStatus[3]:=floattostrf(TSSLadung_e, fffixed, 6, TSRes) + '/' + inttostr(TSCapacity) + 'F';
     end
     else
     begin
      NewStatus[3]:='NA';
     end;
 
-    for arrayi:=1 to 3 do
+    //NewStatus [4] == Load%
+    //[4]
+    if TSState then //TSState Entladen:Laden
+    begin
+     if MainFrame.Debug then debugln('TSSLadung_e: ' + Floattostr(TSSLadung_e) + ' TSCapacity: ' + Inttostr(TSCapacity * 100));
+     NewStatus[4]:=floattostrf((TSSLadung_e / TSCapacity * 100), fffixed, 6, TSRes) + '%';
+    end
+    else
+    begin
+     NewStatus[4]:='NA%';
+    end;
+
+
+
+    for arrayi:=1 to 4 do
     begin
       if not (fStatusText[arrayi] = NewStatus[arrayi]) then
       begin
@@ -200,6 +225,9 @@ begin
 
   end;
 end;
+
+
+
 
 { TCalculator }
 
@@ -251,7 +279,9 @@ begin
     begin
       //Max Time Calc.
       //ln(RES/U_0)*R*C
+      if MainFrame.Debug then debugln('TRes:' + Floattostr(TRes) + 'TVoltage:' + Inttostr(TVoltage) + 'TResistor:' + Inttostr(TResistor) + 'TCapacity:' + Inttostr(TCapacity) + 'roundtoi:' + Floattostr(roundtoi));
       Result:=RoundTo(-ln(TRes/TVoltage)*TResistor*TCapacity, -roundtoi);
+      if MainFrame.Debug then debugln('Result:' + Floattostr(Result));
       Synchronize(@TCShowstatus);
     end
     else if Tmode = 1 then
@@ -261,7 +291,7 @@ begin
       begin
         TRestCountPart:=0;
       end;
-      //debugln(Floattostr(ceil((TCountPart * (TRes - 1)))) + ' bis' + Floattostr(ceil((TCountPart * TRes) + TRestCountPart)));
+      if MainFrame.Debug then debugln(Floattostr(ceil((TCountPart * (TRes - 1)))) + ' bis ' + Floattostr(ceil((TCountPart * TRes) + TRestCountPart)));
       for i:= ceil((TCountPart * (TRes - 1)) + TRestCountPart) to ceil((TCountPart * TRes) + TRestCountPart) do
       begin
         if (not Terminated) then

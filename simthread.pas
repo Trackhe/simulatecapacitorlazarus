@@ -172,7 +172,7 @@ begin
 
      //I(t) in A = -(U_0*e^-(t/(r*c))/r)
      TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
-     NewStatus[2]:=floattostrf(TSVoltage+TSSAmpere, fffixed, 6, TSRes) + 'A';
+     NewStatus[2]:=floattostrf(TSVoltage+TSSAmpere, fffixed, 6, TSRes) + 'V';
     end
     else
     begin

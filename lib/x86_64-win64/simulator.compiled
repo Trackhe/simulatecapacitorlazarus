@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="C:\lazarus\fpc\3.2.0\bin\x86_64-win64\fpc.exe" Date="1381338938"/>
-  <Params Value=" -MObjFPC -Scghi -Ct -O1 -g -gl -l -vewnhibq -FiC:\Users\michael\Desktop\simulatecapacitorlazarus\lib\x86_64-win64 -FuC:\lazarus\components\tachart\lib\x86_64-win64\win32 -FuC:\lazarus\components\ideintf\units\x86_64-win64\win32 -FuC:\lazarus\components\lazcontrols\lib\x86_64-win64\win32 -FuC:\lazarus\lcl\units\x86_64-win64\win32 -FuC:\lazarus\lcl\units\x86_64-win64 -FuC:\lazarus\components\lazutils\lib\x86_64-win64 -FuC:\lazarus\packager\units\x86_64-win64 -FuC:\Users\michael\Desktop\simulatecapacitorlazarus\ -FUC:\Users\michael\Desktop\simulatecapacitorlazarus\lib\x86_64-win64\ -FEC:\Users\michael\Desktop\simulatecapacitorlazarus\ -oC:\Users\michael\Desktop\simulatecapacitorlazarus\simulator.exe -dLCL -dLCLwin32 simulator.lpr"/>
-  <Complete Value="False"/>
-</CONFIG>

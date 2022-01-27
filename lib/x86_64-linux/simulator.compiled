@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-  <Compiler Value="/usr/bin/fpc" Date="1574718682"/>
-  <Params Value=" -MObjFPC -Scghi -Cg -Ct -O1 -g -gl -l -vewnhibq -Fi/home/schueler_in/Schreibtisch/simulatecapacitorlazarus-main/lib/x86_64-linux -Fu/usr/lib/lazarus/2.0.6/components/tachart/lib/x86_64-linux/gtk2 -Fu/usr/lib/lazarus/2.0.6/components/ideintf/units/x86_64-linux/gtk2 -Fu/usr/lib/lazarus/2.0.6/components/lazcontrols/lib/x86_64-linux/gtk2 -Fu/usr/lib/lazarus/2.0.6/lcl/units/x86_64-linux/gtk2 -Fu/usr/lib/lazarus/2.0.6/lcl/units/x86_64-linux -Fu/usr/lib/lazarus/2.0.6/components/lazutils/lib/x86_64-linux -Fu/usr/lib/lazarus/2.0.6/packager/units/x86_64-linux -Fu/home/schueler_in/Schreibtisch/simulatecapacitorlazarus-main/ -FU/home/schueler_in/Schreibtisch/simulatecapacitorlazarus-main/lib/x86_64-linux/ -FE/home/schueler_in/Schreibtisch/simulatecapacitorlazarus-main/ -o/home/schueler_in/Schreibtisch/simulatecapacitorlazarus-main/simulator -dLCL -dLCLgtk2 simulator.lpr"/>
-  <Complete Value="False"/>
-</CONFIG>

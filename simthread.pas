@@ -28,9 +28,9 @@ type
     FOnShowStatus: TShowStatusEvent;
 
 
-    TSResistor: UInt64;
-    TSCapacity: UInt64;
-    TSVoltage: UInt64;
+    TSResistor: Real;
+    TSCapacity: Real;
+    TSVoltage: Real;
     TSRes: Int32;
     TSRes0: Int32;
     TSState: Boolean;
@@ -42,9 +42,9 @@ type
   public
     property OnShowStatus: TShowStatusEvent read FOnShowStatus write FOnShowStatus;
     Constructor Create(CreateSuspended : boolean);
-    property PTSResistor: UInt64 read TSResistor write TSResistor;
-    property PTSCapacity: UInt64 read TSCapacity write TSCapacity;
-    property PTSVoltage: UInt64 read TSVoltage write TSVoltage;
+    property PTSResistor: Real read TSResistor write TSResistor;
+    property PTSCapacity: Real read TSCapacity write TSCapacity;
+    property PTSVoltage: Real read TSVoltage write TSVoltage;
     property PTSRes: Int32 read TSRes write TSRes;
     property PTSRes0: Int32 read TSRes0 write TSRes0;
     property PTSState: Boolean read TSState write TSState;
@@ -61,9 +61,9 @@ type
     e:Extended;
     FCOnShowStatus: TCShowStatusEvent;
     FCOnShowStatus1: TCShowStatusEvent1;
-    TResistor: UInt64;
-    TCapacity: UInt64;
-    TVoltage: UInt64;
+    TResistor: Real;
+    TCapacity: Real;
+    TVoltage: Real;
     TRes: Double;
     TRes0: Double;
     TRes1: Double;
@@ -83,9 +83,9 @@ type
     Constructor Create(CreateSuspended : boolean); //UInt64 same as QWord biggest possible Number Type.
     property TCOnShowStatus: TCShowStatusEvent read FCOnShowStatus write FCOnShowStatus;
     property TCOnShowStatus1: TCShowStatusEvent1 read FCOnShowStatus1 write FCOnShowStatus1;
-    property PTResistor: UInt64 read TResistor write TResistor;
-    property PTCapacity: UInt64 read TCapacity write TCapacity;
-    property PTVoltage: UInt64 read TVoltage write TVoltage;
+    property PTResistor: Real read TResistor write TResistor;
+    property PTCapacity: Real read TCapacity write TCapacity;
+    property PTVoltage: Real read TVoltage write TVoltage;
     property PTRes: Double read TRes write TRes;
     property PTRes0: Double read TRes0 write TRes0;
     property PTRes1: Double read TRes1 write TRes1;
@@ -117,7 +117,7 @@ end;
 procedure TSimmulation.Execute;
 var
   NewStatus : array[1..4] of String;
-  TSSVoltage,TSSVoltage_i,TSSVoltage_e : Int64;
+  TSSVoltage,TSSVoltage_i,TSSVoltage_e : Real;
   TSSTimestamp,TSSTimestamp_v : LongInt;
   TSSAmpere,TSSLadung,TSSLadung_e: Double;
   Is_Update : Boolean = false;
@@ -132,13 +132,14 @@ begin
   begin
 
   //TSState_time == timestamp in ms
-  TSSTimestamp_v:=(floor(ln(TSVoltage)*TSResistor*TSCapacity) - Round((DateTimeToUnix(Now) - TSState_time)));
+  TSSTimestamp_v:=(Round((DateTimeToUnix(Now) - TSState_time)));//floor(ln(TSVoltage)*TSResistor*TSCapacity) -
+  //if MainFrame.Debug then debugln(Floattostr(DateTimeToUnix(Now) - TSState_time));
   if(TSSTimestamp_v <= 0)
   then TSSTimestamp := 0
   else TSSTimestamp := TSSTimestamp_v;
 
     //[1]
-    if not TSSVoltage = TSVoltage then
+    if not true then//TSSVoltage = TSVoltage
     begin
 
       TSSVoltage_i:= TSSVoltage_i + 1;
@@ -165,14 +166,20 @@ begin
     begin
      //TSState_time == timestamp in ms
 
+     //TSResistor := ResistorInput.position;
+     //TSCapacity := InputCapacity * UnitMultiplicator;
+     //TSVoltage := Round(InVoltageInput.position);
+     //TSRes := CalcAccuracyInput.position;
+     //TSRes0 := CalcAccuracyInput1.position;
 
      //A = U/R
      //U = TVoltage*Power(Exp(1), -((TSSTimestamp)/(TResistor*TCapacity))
-
-
      //I(t) in A = -(U_0*e^-(t/(r*c))/r)
-     TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
-     NewStatus[2]:=floattostrf(TSVoltage+TSSAmpere, fffixed, 6, TSRes) + 'V';
+     //TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
+
+     if MainFrame.Debug then debugln(Inttostr(TSSTimestamp) + ':' + floattostr(TSVoltage) + ':' + floattostr(TSCapacity) + ':' + floattostr(TSResistor));
+
+     NewStatus[2]:=floattostrf(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))), fffixed, 6, 2) + 'V';
     end
     else
     begin
@@ -190,7 +197,7 @@ begin
      if(TSSLadung <= 0) then TSSLadung_e := 0
      else TSSLadung_e := TSSLadung;
 
-     NewStatus[3]:=floattostrf(TSSLadung_e, fffixed, 6, TSRes) + '/' + inttostr(TSCapacity) + 'F';
+     NewStatus[3]:=floattostrf(TSSLadung_e, fffixed, 6, TSRes) + '/' + floattostr(TSCapacity) + 'F';
     end
     else
     begin
@@ -201,7 +208,7 @@ begin
     //[4]
     if TSState then //TSState Entladen:Laden
     begin
-     if MainFrame.Debug then debugln('TSSLadung_e: ' + Floattostr(TSSLadung_e) + ' TSCapacity: ' + Inttostr(TSCapacity * 100));
+     if MainFrame.Debug then debugln('TSSLadung_e: ' + Floattostr(TSSLadung_e) + ' TSCapacity: ' + floattostr(TSCapacity * 100));
      NewStatus[4]:=floattostrf((TSSLadung_e / TSCapacity * 100), fffixed, 6, TSRes) + '%';
     end
     else
@@ -279,7 +286,7 @@ begin
     begin
       //Max Time Calc.
       //ln(RES/U_0)*R*C
-      if MainFrame.Debug then debugln('TRes:' + Floattostr(TRes) + 'TVoltage:' + Inttostr(TVoltage) + 'TResistor:' + Inttostr(TResistor) + 'TCapacity:' + Inttostr(TCapacity) + 'roundtoi:' + Floattostr(roundtoi));
+      if MainFrame.Debug then debugln('TRes:' + Floattostr(TRes) + 'TVoltage:' + floattostr(TVoltage) + 'TResistor:' + floattostr(TResistor) + 'TCapacity:' + floattostr(TCapacity) + 'roundtoi:' + Floattostr(roundtoi));
       Result:=RoundTo(-ln(TRes/TVoltage)*TResistor*TCapacity, -roundtoi);
       if MainFrame.Debug then debugln('Result:' + Floattostr(Result));
       Synchronize(@TCShowstatus);

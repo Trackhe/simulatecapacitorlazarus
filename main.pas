@@ -26,6 +26,9 @@ type
     //All Definitions for the Form
     CalcAccuracyInput1: TTrackBar;
     CalcAccuracyInputLabel1: TLabel;
+    Label1: TLabel;
+    ResistorInputE: TComboBox;
+    InVoltageInputE: TComboBox;
     Chart1: TChart;
     Chart1BSplineSeries1: TBSplineSeries;
     Chart1CubicSplineSeries1: TCubicSplineSeries;
@@ -50,11 +53,10 @@ type
     CalcAccuracyLabel: TLabel;
     Beenden: TButton;
     CapacityInput: TEdit;
-    ResistorUnitLabel: TLabel;
+    ResistorInput: TEdit;
+    InVoltageInput: TEdit;
     ResistorLabel: TLabel;
     Load: TImage;
-    InVoltageInput: TTrackBar;
-    ResistorInput: TTrackBar;
     CalcAccuracyInput: TTrackBar;
     UnLoad: TImage;
 
@@ -62,23 +64,25 @@ type
     LoadUnload: TButton;
     Help: TButton;
 
-    VoltageUnitLabel: TLabel;
     AppHeadline: TLabel;
     AppSubHeadline: TLabel;
     InVoltageLabel: TLabel;
     CapacityLabel: TLabel;
 
-    //All Funktions that called from the Form
+    //All functions that called from the Form
+
     procedure CheckBox1Change(Sender: TObject);
     procedure CheckBox2Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
 
     procedure InVoltageInputChange(Sender: TObject);
     procedure CapacityInputChange(Sender: TObject);
-    procedure CapacityUnitInputChange(Sender: TObject);
+    procedure CapacityInputEChange(Sender: TObject);
+    procedure InVoltageInputEChange(Sender: TObject);
     procedure ResistorInputChange(Sender: TObject);
     procedure CalcAccuracyInputChange(Sender: TObject);
     procedure CalcAccuracyInput1Change(Sender: TObject);
+    procedure ResistorInputEChange(Sender: TObject);
 
 
 
@@ -97,10 +101,7 @@ type
 
     procedure SetAccuracyInput;
     procedure SetAccuracyInput1;
-    procedure InVoltageInputChangeOperation;
-    procedure CapacityInputChangeOperation;
-    procedure CapacityUnitInputChangeOperation;
-    procedure ResistorInputChangeOperation;
+    procedure InputChangeOperation(What: Int32; E: Int32);
     procedure SetCheckBox1;
     procedure SetCheckBox2;
 
@@ -123,7 +124,8 @@ var
   //Setup vars
   //Debug: Boolean;//CheckBox1.Checked
   //Already defined InVoltageInput.position,CapacityInput.position,ResistorInput.position,CalcAccuracyInput.position,CalcAccuracyInput1.position;
-  UnitMultiplicator: Real;
+  CUnitMultiplicator,VUnitMultiplicator,RUnitMultiplicator: Real;
+  InputCapacity,InputVoltage,InputResistor:Real;
 
   calcres: double;
   calcres1: double;
@@ -143,6 +145,7 @@ var
 
 
 procedure TMainFrame.FormCreate(Sender: TObject);
+var i,ia:int32;
 begin
   terminate:=false;
 
@@ -164,20 +167,30 @@ begin
     debugln('Reading Config.');
     debugln('DEBUG:Debug = True');
   end;
-  InVoltageInput.position := SAVE.ReadInteger('SimulationSettings', 'InputVoltage', 0);
-  SAVE.WriteInteger('SimulationSettings', 'InputVoltage', InVoltageInput.position);
-  CapacityInput.caption := Inttostr(SAVE.ReadInteger('SimulationSettings', 'CapacitorCapacity', 0));
-  SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacity', Strtoint(CapacityInput.caption));
+
+  InVoltageInput.caption := Floattostr(SAVE.ReadFloat('SimulationSettings', 'InputVoltage', 0.0));
+  SAVE.WriteFloat('SimulationSettings', 'InputVoltage', Strtofloat(InVoltageInput.text));
+  InVoltageInputE.ItemIndex := SAVE.ReadInteger('SimulationSettings', 'InputVoltageUnit', 0);
+  SAVE.WriteInteger('SimulationSettings', 'InputVoltageUnit', InVoltageInputE.ItemIndex);
+
+  CapacityInput.caption := Floattostr(SAVE.ReadFloat('SimulationSettings', 'CapacitorCapacity', 0.0));
+  SAVE.WriteFloat('SimulationSettings', 'CapacitorCapacity', Strtofloat(CapacityInput.text));
   CapacityInputE.ItemIndex := SAVE.ReadInteger('SimulationSettings', 'CapacitorCapacityUnit', -1);
   SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacityUnit', CapacityInputE.ItemIndex);
-  ResistorInput.position := SAVE.ReadInteger('SimulationSettings', 'DischargeResistor', 0);
-  SAVE.WriteInteger('SimulationSettings', 'DischargeResistor', ResistorInput.position);
+
+  ResistorInput.caption := Floattostr(SAVE.ReadFloat('SimulationSettings', 'DischargeResistor', 0.0));
+  SAVE.WriteFloat('SimulationSettings', 'DischargeResistor', Strtofloat(ResistorInput.text));
+  ResistorInputE.ItemIndex := SAVE.ReadInteger('SimulationSettings', 'DischargeResistorUnit', 0);
+  SAVE.WriteInteger('SimulationSettings', 'DischargeResistorUnit', ResistorInputE.ItemIndex);
+
   if Debug then
   begin
-    debugln('SimulationSettings:InputVoltage = ' + Inttostr(InVoltageInput.position));
-    debugln('SimulationSettings:CapacitorCapacity = ' + CapacityInput.caption);
+    debugln('SimulationSettings:InputVoltage = ' + InVoltageInput.text);
+    debugln('SimulationSettings:InputVoltageUnit = ' + Inttostr(InVoltageInputE.ItemIndex));
+    debugln('SimulationSettings:CapacitorCapacity = ' + CapacityInput.text);
     debugln('SimulationSettings:CapacitorCapacityUnit = ' + Inttostr(CapacityInputE.ItemIndex));
-    debugln('SimulationSettings:DischargeResistor = ' + Inttostr(ResistorInput.position));
+    debugln('SimulationSettings:DischargeResistor = ' + ResistorInput.text);
+    debugln('SimulationSettings:DischargeResistorUnit = ' + Inttostr(ResistorInputE.ItemIndex));
     debugln('SimulationSettings:Settings = ' + Booltostr(CheckBox2.Checked));
   end;
   CalcAccuracyInput.position := SAVE.ReadInteger('DrawSettings', 'DrawnYPrecison', 1);
@@ -188,16 +201,18 @@ begin
   SAVE.WriteBool('DrawSettings', 'FastDraw', CheckBox1.Checked);
   if Debug then
   begin
-    debugln('DrawSettings:DrawnYPrecison = ' + Inttostr(InVoltageInput.position));
+    debugln('DrawSettings:DrawnYPrecison = ' + Inttostr(CalcAccuracyInput.position));
     debugln('DrawSettings:DrawnXPrecison = ' + Inttostr(CalcAccuracyInput1.position));
     debugln('DrawSettings:FastDraw = ' + Booltostr(CheckBox1.Checked));
   end;
 
   //Be sure all variables are Updated
-  InVoltageInputChangeOperation;
-  CapacityInputChangeOperation;
-  CapacityUnitInputChangeOperation;
-  ResistorInputChangeOperation;
+  for i:= 0 to 2 do begin
+    for ia:= 0 to 1 do begin
+        InputChangeOperation(i, ia);
+    end;
+  end;
+
   SetAccuracyInput;
   SetAccuracyInput1;
   SetCheckBox2;
@@ -211,15 +226,14 @@ begin
   //Start circuit simulation.
   tsim.OnShowStatus := @ShowStatus;
   tsim.PTSState_time := DateTimeToUnix(Now);
-  tsim.PTSResistor := ResistorInput.position;
-  tsim.PTSCapacity := Strtoint(CapacityInput.caption) * UnitMultiplicator;
-  tsim.PTSVoltage := Round(InVoltageInput.position);
+  tsim.PTSResistor := InputResistor * RUnitMultiplicator;
+  tsim.PTSCapacity := InputCapacity * CUnitMultiplicator;
+  tsim.PTSVoltage := InputVoltage * VUnitMultiplicator;
   tsim.PTSRes := CalcAccuracyInput.position;
   tsim.PTSRes0 := CalcAccuracyInput1.position;
   tsim.PTSState := False;
   tsim.FreeOnTerminate := True;
   tsim.Start;
-  //debugln(Booltostr(TableIsLoaded));
 
 end;
 
@@ -236,24 +250,36 @@ end;
 //Update Static UI
 procedure TMainFrame.InVoltageInputChange(Sender: TObject);
 begin
-  InVoltageInputChangeOperation;
+  //InVoltageInputChangeOperation; //#0
+  InputChangeOperation(0, 0);
+end;
+
+procedure TMainFrame.InVoltageInputEChange(Sender: TObject);
+begin
+  InputChangeOperation(0, 1);
 end;
 
 procedure TMainFrame.CapacityInputChange(Sender: TObject);
 begin
-  CapacityInputChangeOperation;
+  //CapacityInputChangeOperation; //#1
+  InputChangeOperation(1, 0);
 end;
 
-procedure TMainFrameCapacityUnitInputChange(Sender: TObject);
+procedure TMainFrame.CapacityInputEChange(Sender: TObject);
 begin
-  CapacityUnitInputChangeOperation;
+  InputChangeOperation(1, 1);
 end;
 
 procedure TMainFrame.ResistorInputChange(Sender: TObject);
 begin
-  ResistorInputChangeOperation;
+  //ResistorInputChangeOperation; //#2
+  InputChangeOperation(2, 0);
 end;
 
+procedure TMainFrame.ResistorInputEChange(Sender: TObject);
+begin
+  InputChangeOperation(2, 1);
+end;
 
 
 procedure TMainFrame.CalcAccuracyInputChange(Sender: TObject);
@@ -281,26 +307,171 @@ begin
   SetCheckBox2;
 end;
 
-//Update methods
-procedure TMainFrame.InVoltageInputChangeOperation;
+//Update methods //#0 Voltage //#1 Capacity Input //#2 CapacityUnit //#3 Resistor
+procedure TMainFrame.InputChangeOperation(What: Int32; E: Int32);
+var
+  valbool:Boolean=false;
+  error_input:Int32;
 begin
-  SAVE.WriteInteger('SimulationSettings', 'InputVoltage', InVoltageInput.position);
-  VoltageUnitLabel.Caption := IntToStr(InVoltageInput.position) + 'V';
-  CircuitVolt.Caption := IntToStr(InVoltageInput.position) + 'V';
+  if Debug then debugln(Inttostr(What) + ':' + Inttostr(E));
+  case What of
+  0:
+  begin
+    if not (E = 1) then
+      begin
+      Val(InVoltageInput.text, InputVoltage,error_input);
+      if error_input<>0 then
+      begin
+         if Debug then debugln('Eingabefehler an der Stelle:' + Inttostr(error_input));
+         //ShowMessage('Eingabefehler an der Stelle:' + Inttostr(error_input));
+      end
+      else
+      begin
+        SAVE.WriteFloat('SimulationSettings', 'InputVoltage', InputVoltage);
+        CircuitVolt.Caption := InVoltageInput.text + 'V';
+        //if not InputVoltage = Strtofloat(InVoltageInput.text) then
+        //begin
+        //  debugln('Val to Voltage macht nicht seinen Job');
+        //  InputVoltage:=Strtofloat(InVoltageInput.text);
+        //end;
 
-  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
-    not (InVoltageInput.position = 0) not (CapacityInputE.ItemIndex = -1) then
-    LoadUnload.Enabled := True
+        valbool:=true;
+      end;
+      end
+      else
+      begin
+        if Debug then debugln('Update Volt Unit');
+        SAVE.WriteInteger('SimulationSettings', 'InputVoltageUnit', InVoltageInputE.ItemIndex);
+        if (InVoltageInputE.ItemIndex <> -1) then
+           InVoltageInput.Enabled:= true
+        else
+           InVoltageInput.Enabled:= false;
+
+        case InVoltageInputE.ItemIndex of
+        0:
+          VUnitMultiplicator := 1.0;
+        else
+          VUnitMultiplicator := 1.0;
+        end;
+
+        valbool:=true;
+      end;
+  end;
+  1:
+  begin
+
+    debugln(Inttostr(E));
+
+    if not (E = 1) then
+    begin
+      Val(CapacityInput.text, InputCapacity,error_input);
+      if (error_input<>0) then
+      begin
+         if Debug then debugln('Eingabefehler an der Stelle:' + Inttostr(error_input));
+      end
+      else
+      begin
+      if Debug then debugln('Update Capacity');
+      SAVE.WriteFloat('SimulationSettings', 'CapacitorCapacity', InputCapacity);
+      valbool:=true;
+      end;
+    end
+    else
+    begin
+      if Debug then debugln('Update Capacity Unit');
+      SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacityUnit', CapacityInputE.ItemIndex);
+      if (CapacityInputE.ItemIndex <> -1) then
+         CapacityInput.Enabled:= true
+      else
+         CapacityInput.Enabled:= false;
+
+      case CapacityInputE.ItemIndex of
+      0:
+        CUnitMultiplicator := 1.0;
+      1:
+        CUnitMultiplicator := 0.001;
+      2:
+        CUnitMultiplicator := 0.000001;
+      3:
+        CUnitMultiplicator := 0.000000001;
+      4:
+        CUnitMultiplicator := 0.000000000001;
+      else
+        CUnitMultiplicator := 1.0;
+      end;
+
+      valbool:=true;
+    end;
+  end;
+  2:
+  begin
+    if not (E = 1) then
+    begin
+      Val(ResistorInput.text, InputResistor,error_input);
+      if error_input<>0 then
+      begin
+         if Debug then debugln('Eingabefehler an der Stelle:' + Inttostr(error_input));
+      end
+      else
+      begin
+        if Debug then debugln('Update Resistor Size');
+        SAVE.WriteFloat('SimulationSettings', 'DischargeResistor', InputResistor);
+        CircuitResistor.Caption := ResistorInput.text + 'Ohm';
+        valbool:=true;
+      end;
+    end
+    else
+    begin
+      if Debug then debugln('Update Resistor Unit');
+      SAVE.WriteInteger('SimulationSettings', 'DischargeResistorUnit', ResistorInputE.ItemIndex);
+      if (ResistorInputE.ItemIndex <> -1) then
+         ResistorInput.Enabled:= true
+      else
+         ResistorInput.Enabled:= false;
+
+      case ResistorInputE.ItemIndex of
+      0:
+        RUnitMultiplicator := 1.0;
+      else
+        RUnitMultiplicator := 1.0;
+      end;
+
+      valbool:=true;
+    end;
+  end
   else
+    debugln('Input Change Operation without ID. not Possible.');
+  end;
+
+  if valbool then
+  begin
+    if Debug then debugln('R:' + Floattostr(RUnitMultiplicator) + ': C:' + Floattostr(CUnitMultiplicator) + ': V:' + Floattostr(VUnitMultiplicator));
+    if Debug then debugln('R:' + Floattostr(InputResistor) + ': C:' + Floattostr(InputCapacity) + ': V:' + Floattostr(InputVoltage));
+    if Debug then debugln('R:' + Floattostr(InputResistor * RUnitMultiplicator) + ': C:' + Floattostr(InputCapacity * CUnitMultiplicator) + ': V:' + Floattostr(InputVoltage * VUnitMultiplicator));
+    if not (InputResistor = 0) and not (InputCapacity <= 0) and
+      not (InputVoltage = 0) and not (CapacityInputE.ItemIndex = -1) and
+      not (InVoltageInputE.ItemIndex = -1) and not (ResistorInputE.ItemIndex = -1) then
+      LoadUnload.Enabled := True
+    else
+      LoadUnload.Enabled := False;
+  end
+  else
+  begin
     LoadUnload.Enabled := False;
+  end;
 
   if (LoadUnload.Caption = 'Abbrechen') then
   begin
    CancelProzess;
   end;
-  tsim.PTSVoltage := Round(InVoltageInput.position);
-  tsim.PTSState_time := DateTimeToUnix(Now);
 
+  if valbool then
+  begin
+    tsim.PTSVoltage := InputVoltage * VUnitMultiplicator;
+    tsim.PTSState_time := DateTimeToUnix(Now);
+    tsim.PTSCapacity := InputCapacity * CUnitMultiplicator;
+    tsim.PTSResistor := InputResistor * RUnitMultiplicator;
+  end;
 
   Load.Visible := True;
   UnLoad.Visible := False;
@@ -308,106 +479,14 @@ begin
   tsim.PTSState := False;
   LoadUnload.Caption := 'Entladen';
 
-  Chart1LineSeries1.Clear;
+
+  Label1.Caption:='';
+  //Chart1LineSeries1.Clear;
+  Chart1BSplineSeries1.Clear;
   MainFrame.ChartListbox1.Clear;
   if TableIsLoaded then ValuetableForm.StringGrid1.Clear;
 end;
 
-procedure TMainFrame.CapacityInputChangeOperation;
-begin
-  SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacity', CapacityInput.position);
-  //CapacityUnitLabel.Caption := IntToStr(CapacityInput.position) + 'F';
-  //CapacitorCapacity.Caption := IntToStr(CapacityInput.position) + 'F';
-
-  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
-    not (InVoltageInput.position = 0) not (CapacityInputE.ItemIndex = -1) then
-    LoadUnload.Enabled := True
-  else
-    LoadUnload.Enabled := False;
-
-  if (LoadUnload.Caption = 'Abbrechen') then
-  begin
-   CancelProzess;
-  end;
-
-
-
-  tsim.PTSCapacity := Strtoint(CapacityInput.caption) * UnitMultiplicator;
-  tsim.PTSState_time := DateTimeToUnix(Now);
-
-  Load.Visible := True;
-  UnLoad.Visible := False;
-  CircuitSwitch.Caption := 'Laden';
-  tsim.PTSState := False;
-  LoadUnload.Caption := 'Entladen';
-
-  Chart1LineSeries1.Clear;
-  MainFrame.ChartListbox1.Clear;
-  if TableIsLoaded then ValuetableForm.StringGrid1.Clear;
-end;
-
-procedure TMainFrame.CapacityUnitInputChangeOperation;
-begin
-  SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacityUnit', CapacityInputE.ItemIndex);
-  //CapacityUnitLabel.Caption := IntToStr(CapacityInput.position) + 'F';
-  //CapacitorCapacity.Caption := IntToStr(CapacityInput.position) + 'F';
-
-  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
-    not (InVoltageInput.position = 0) and not (CapacityInputE.ItemIndex = -1) then
-    LoadUnload.Enabled := True
-  else
-    LoadUnload.Enabled := False;
-
-  if (LoadUnload.Caption = 'Abbrechen') then
-  begin
-   CancelProzess;
-  end;
-
-
-
-  tsim.PTSCapacity := Strtoint(CapacityInput.caption) * UnitMultiplicator;
-  tsim.PTSState_time := DateTimeToUnix(Now);
-
-  Load.Visible := True;
-  UnLoad.Visible := False;
-  CircuitSwitch.Caption := 'Laden';
-  tsim.PTSState := False;
-  LoadUnload.Caption := 'Entladen';
-
-  Chart1LineSeries1.Clear;
-  MainFrame.ChartListbox1.Clear;
-  if TableIsLoaded then ValuetableForm.StringGrid1.Clear;
-end;
-
-procedure TMainFrame.ResistorInputChangeOperation;
-begin
-  SAVE.WriteInteger('SimulationSettings', 'DischargeResistor', ResistorInput.position);
-  ResistorUnitLabel.Caption := IntToStr(ResistorInput.position) + 'Ohm';
-  CircuitResistor.Caption := IntToStr(ResistorInput.position) + 'Ohm';
-
-  if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and
-    not (InVoltageInput.position = 0) not (CapacityInputE.ItemIndex = -1) then
-    LoadUnload.Enabled := True
-  else
-    LoadUnload.Enabled := False;
-
-  if (LoadUnload.Caption = 'Abbrechen') then
-  begin
-   CancelProzess;
-  end;
-  tsim.PTSResistor := Round(ResistorInput.position);
-  tsim.PTSState_time := DateTimeToUnix(Now);
-
-  Load.Visible := True;
-  UnLoad.Visible := False;
-  CircuitSwitch.Caption := 'Laden';
-  tsim.PTSState := False;
-  LoadUnload.Caption := 'Entladen';
-
-  Chart1LineSeries1.Clear;
-  MainFrame.ChartListbox1.Clear;
-  if TableIsLoaded then ValuetableForm.StringGrid1.Clear;
-end;
 
 procedure TMainFrame.SetAccuracyInput;
 begin
@@ -517,7 +596,7 @@ procedure TMainFrame.StartCalculation;
 begin
      if (LoadUnload.Caption = 'Entladen') then//Check the state.
      begin
-      if not (ResistorInput.position = 0) and not (CapacityInput.position = 0) and not (InVoltageInput.position = 0) then
+      if not (InputResistor * RUnitMultiplicator <= 0) and not (InputCapacity * CUnitMultiplicator <= 0) and not (InputVoltage * VUnitMultiplicator <= 0) then
       begin
         Load.Visible := False;
         UnLoad.Visible := True;
@@ -527,15 +606,16 @@ begin
         if Debug then debugln('Calc the max Unload Time.');
 
         tsim.PTSState := True;
+        tsim.PTSState_time := DateTimeToUnix(Now);
         //GetLogicalCpuCount();
         tcalc := TCalculator.Create(True);
         tcalc.TCOnShowStatus := @TCShowStatus;
         tcalc.FreeOnTerminate := True;
         //Max Time Calc.
         //ln(RES/U_0)*R*C
-        tcalc.PTResistor := ResistorInput.position;//gg R
-        tcalc.PTCapacity := CapacityInput.position;//gg C
-        tcalc.PTVoltage := InVoltageInput.position;//gg  U_0
+        tcalc.PTResistor := InputResistor * RUnitMultiplicator;
+        tcalc.PTCapacity := InputCapacity * CUnitMultiplicator;
+        tcalc.PTVoltage := InputVoltage * VUnitMultiplicator;
         tcalc.PTRes := calcres;//2 means 0.01
         tcalc.PTMode := 0;//0 = Max Time Calc
         tcalc.Start;
@@ -589,7 +669,7 @@ var
   cpucount: int64;
 begin
   if Debug then debugln('Max Unload Time: ' + Floattostr(Result));
-
+  Label1.Caption:='Max Unload Time: ' + Floattostr(Result) + 's';
 
   cpucount := 1;
   { Get the current values }
@@ -618,7 +698,7 @@ begin
   if Debug then debugln('Calculations Parts: ' + Inttostr(cpucount));
   if Debug then debugln(Floattostr((crstcountpart * cpucount) + crstcountpartrest) + ':' + Inttostr(crs));
 
-  Chart1.Extent.YMax := InVoltageInput.position;
+  Chart1.Extent.YMax := InputVoltage;
   Chart1.Extent.XMax := Result;
 
   for ci := 1 to cpucount do //CPU Core Count
@@ -628,9 +708,9 @@ begin
     tcalc1.AffinityMask := dword(CPUcores);
     tcalc1.TCOnShowStatus1 := @TCShowStatus1;
     tcalc1.FreeOnTerminate := True;
-    tcalc1.PTResistor := ResistorInput.position;//gg R
-    tcalc1.PTCapacity := CapacityInput.position;//gg C
-    tcalc1.PTVoltage := InVoltageInput.position;//gg  U_0
+    tcalc1.PTResistor := InputResistor * RUnitMultiplicator;
+    tcalc1.PTCapacity := InputCapacity * CUnitMultiplicator;
+    tcalc1.PTVoltage := InputVoltage * VUnitMultiplicator;
     tcalc1.PTRes := ci;
     tcalc1.PTRes0 := calcres1;
     tcalc1.PTRes1 := calcres;
@@ -648,6 +728,7 @@ end;
 procedure TMainFrame.TCShowStatus1(Result: double; t: double);
 var
   i: UInt64;
+  ib: UInt64;
   chartdrawing:Boolean=true;
 begin
   if Debug then debugln('Result: ' + Floattostr(Result));
@@ -661,42 +742,45 @@ begin
   CalcPercentage.Caption := floattostrf(crsitc / ((crs + 1) / 100), fffixed, 4, 0) + '% ' + Inttostr(crsitc) + ':' + Inttostr(crs + 1);
   Application.ProcessMessages;
 
-
+  ib:=0;
   if crsitc = crs + 1 then
   begin
     ValuetableForm.StringGrid1.ColCount := crsitc + 1;
-    ValuetableForm.StringGrid1.RowCount := 3;
+    ValuetableForm.StringGrid1.RowCount := 2;
     ValuetableForm.StringGrid1.Cells[0, 0] := 'T in s';
     ValuetableForm.StringGrid1.Cells[0, 1] := 'V in v';
-    ValuetableForm.StringGrid1.Cells[0, 2] := 'C in F';
+    //ValuetableForm.StringGrid1.Cells[0, 2] := 'C in F';
 
     if Debug then debugln('Fastdraw: ' + Booltostr(CheckBox1.Checked));
 
     for i := 0 to High(ValueTable[1]) do
     begin
+      if not (ValueTable[2][(i - 1)] = ValueTable[2][i]) then
+      begin
+        if CheckBox1.Checked and chartdrawing then
+        begin
+          Chart1.DisableRedrawing;
+          chartdrawing:=false;
+        end else if not CheckBox1.Checked and not chartdrawing then
+        begin
+          Chart1.EnableRedrawing;
+          chartdrawing:=true;
+        end;
 
-      if CheckBox1.Checked and chartdrawing then
-      begin
-        Chart1.DisableRedrawing;
-        chartdrawing:=false;
-      end else if not CheckBox1.Checked and not chartdrawing then
-      begin
-        Chart1.EnableRedrawing;
-        chartdrawing:=true;
+        if (LoadUnload.Caption = 'Abbrechen') and not terminate then
+        begin
+          //Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
+          Chart1BSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
+          //Chart1CubicSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
+          ValuetableForm.StringGrid1.Cells[ib + 1, 0] := Floattostr(ValueTable[1][i]);
+          ValuetableForm.StringGrid1.Cells[ib + 1, 1] := Floattostr(ValueTable[2][i]);
+          //ValuetableForm.StringGrid1.Cells[i + 1, 2] := Floattostr(ValueTable[2][i]);
+          ib:=ib + 1;
+          Application.ProcessMessages;
+        end;
       end;
-
-      if (LoadUnload.Caption = 'Abbrechen') and not terminate then
-      begin
-        //Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
-        Chart1BSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
-        //Chart1CubicSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
-        ValuetableForm.StringGrid1.Cells[i + 1, 0] := Floattostr(ValueTable[1][i]);
-        ValuetableForm.StringGrid1.Cells[i + 1, 1] := Floattostr(ValueTable[2][i]);
-        ValuetableForm.StringGrid1.Cells[i + 1, 2] := Floattostr(ValueTable[2][i]);
-        Application.ProcessMessages;
-      end;
-
     end;
+    ValuetableForm.StringGrid1.ColCount:= ib + 1;
 
     if not chartdrawing then
     begin
@@ -723,11 +807,9 @@ end;
 
 
 end.
-//Todo: Von Strommessung auf Spannungsmessung
 //Help Site
-//Kreise mit plus Minus als Spannungsquelle
-//Slider anpassen.
-//Kapazotätsslider von 0F bis 1F
+//Test Config und Lösche Config wenn Wrong
+
 
 
 

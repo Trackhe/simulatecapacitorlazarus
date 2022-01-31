@@ -1,12 +1,13 @@
 object ValuetableForm: TValuetableForm
-  Left = 1215
-  Height = 88
-  Top = 906
+  Left = 497
+  Height = 63
+  Top = 463
   Width = 686
+  VertScrollBar.Visible = False
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Wertetabelle'
-  ClientHeight = 88
+  ClientHeight = 63
   ClientWidth = 686
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000
@@ -2130,32 +2131,27 @@ object ValuetableForm: TValuetableForm
   LCLVersion = '2.0.6.0'
   object StringGrid1: TStringGrid
     Left = -1
-    Height = 88
+    Height = 64
     Top = 0
     Width = 688
     ColCount = 1
     DefaultColWidth = 43
-    DefaultRowHeight = 23
+    DefaultRowHeight = 25
     ExtendedSelect = False
     FixedRows = 0
     Flat = True
-    MouseWheelOption = mwGrid
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goSmoothScroll]
     ParentFont = False
-    RowCount = 3
-    ScrollBars = ssHorizontal
+    RowCount = 2
     TabOrder = 0
     Cells = (
-      3
+      2
       0
       0
       'T in s'
       0
       1
       'V in v'
-      0
-      2
-      'C in F'
     )
   end
 end

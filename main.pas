@@ -136,7 +136,7 @@ var
 
 implementation
 
-uses valuetable_form, simthread;
+uses valuetable_form, help_form, simthread;
 
 {$R *.lfm}
 
@@ -295,6 +295,11 @@ end;
 procedure TMainFrame.TabelleClick(Sender: TObject);
 begin
   ValuetableForm.Show;
+end;
+
+procedure TMainFrame.HelpClick(Sender: TObject);
+begin
+  HelpForm.Show;
 end;
 
 procedure TMainFrame.CheckBox1Change(Sender: TObject);
@@ -795,13 +800,6 @@ begin
       LoadUnload.Caption := 'Laden';
     end;
   end;
-
-end;
-
-
-
-procedure TMainFrame.HelpClick(Sender: TObject);
-begin
 
 end;
 

@@ -1,11 +1,13 @@
 object HelpForm: THelpForm
-  Left = 406
-  Height = 497
-  Top = 220
-  Width = 934
+  Left = 698
+  Height = 869
+  Top = 111
+  Width = 375
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'HelpForm'
+  Caption = 'Hilfe'
+  ClientHeight = 869
+  ClientWidth = 375
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000
     0000000100000100200000000000000001006400000064000000000000000000
@@ -2123,6 +2125,151 @@ object HelpForm: THelpForm
     0000000000000000000000000000000000000000000000000000000000000000
     0000
   }
+  OnCreate = FormCreate
   Position = poDesktopCenter
   LCLVersion = '2.0.6.0'
+  object Label1: TLabel
+    Left = 10
+    Height = 30
+    Top = 8
+    Width = 126
+    Caption = 'Hilfe Seite'
+    Font.Height = -27
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 10
+    Height = 22
+    Top = 48
+    Width = 90
+    Caption = 'Übersicht'
+    Font.Height = -21
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label3: TLabel
+    Left = 10
+    Height = 16
+    Top = 72
+    Width = 80
+    AutoSize = False
+    Caption = '1. Bedienung'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 10
+    Height = 30
+    Top = 152
+    Width = 134
+    AutoSize = False
+    Caption = '1. Bedienung'
+    Font.Height = -21
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label5: TLabel
+    Left = 10
+    Height = 264
+    Top = 184
+    Width = 302
+    AutoSize = False
+    Caption = 'Zum entladen über einen Wiederstand, des'#10'Kondensator im Schaltplan, werden zur'#10'Simulation und Berechung 3 Werte benötigt.'#10'Die Spannung mit der aufgeladen wird.'#10'die Kapazität vom Kondensator und'#10'der Wiederstand über dem Entladen wird.'#10#10'Eingegeben werden können Ganzzahlen wie'#10'1-9 aber auch flieskomma Zahlen wie 0.5 oder'#10'0.333, dabei ist zu beachten dass ein Punkt'#10'anstelle des Komma gesetzt werden muss.'#10#10'Zusätzlich muss noch die Einheit angegeben'#10'sein.'#10#10'Wenn all die Punkte erfüllt sind wird der'#10'entlade Knopf Eingeschaltet.'
+    Font.Height = 14
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label6: TLabel
+    Left = 16
+    Height = 16
+    Top = 88
+    Width = 176
+    AutoSize = False
+    Caption = '1.1 Berechnungsgenauigkeit'
+    ParentColor = False
+  end
+  object Label7: TLabel
+    Left = 8
+    Height = 32
+    Top = 456
+    Width = 302
+    AutoSize = False
+    Caption = '1.1 Berechnungsgenauigkeit'
+    Font.Height = -21
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label8: TLabel
+    Left = 8
+    Height = 136
+    Top = 488
+    Width = 304
+    AutoSize = False
+    Caption = 'Es kann die Berechnungsgenauigkeit eingestellt'#10'werden. Dafür aktivieren sie das Kästchen'#10'Einstellungen und Schieben die Regler auf die'#10'gewünschte genauigkeit.'#10'!ACHTUNG Die einstellungen können lange'#10'Berechnungszeiten verursachen.'#10'Dass ist systemabhängig.'
+    Font.Height = 14
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label9: TLabel
+    Left = 16
+    Height = 16
+    Top = 104
+    Width = 166
+    AutoSize = False
+    Caption = '1.2 Diagramm'
+    ParentColor = False
+  end
+  object Label10: TLabel
+    Left = 8
+    Height = 32
+    Top = 616
+    Width = 302
+    AutoSize = False
+    Caption = '1.2 Diagramm'
+    Font.Height = -21
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label11: TLabel
+    Left = 10
+    Height = 80
+    Top = 648
+    Width = 312
+    AutoSize = False
+    Caption = 'In dem Diagramm kann hinein gezoomt werden'#10'durch dass gedrückt Halten der Linken Maus-'#10'taste und das Ziehen von Links oben nach Rechts'#10'Unten, dadurch wählen Sie den gewünschten'#10'bereich aus, den Sie sehen möchten.'
+    Font.Height = 14
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label12: TLabel
+    Left = 16
+    Height = 16
+    Top = 120
+    Width = 166
+    AutoSize = False
+    Caption = '1.3 Schnell Zeichnen'
+    ParentColor = False
+  end
+  object Label13: TLabel
+    Left = 8
+    Height = 32
+    Top = 744
+    Width = 302
+    AutoSize = False
+    Caption = '1.3 Schnell Zeichnen'
+    Font.Height = -21
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label14: TLabel
+    Left = 10
+    Height = 80
+    Top = 776
+    Width = 312
+    AutoSize = False
+    Caption = 'Mit dieser Option wird die Berechnung nicht'#10'schneller, aber die Kurve wird versucht so'#10'schnell wie möglich in das Diagramm'#10'eingefügt zu werden.'
+    Font.Height = 14
+    ParentColor = False
+    ParentFont = False
+  end
 end

@@ -1,7 +1,7 @@
 object ValuetableForm: TValuetableForm
-  Left = 497
+  Left = 1030
   Height = 63
-  Top = 463
+  Top = 399
   Width = 686
   VertScrollBar.Visible = False
   BorderIcons = [biSystemMenu]
@@ -2140,6 +2140,7 @@ object ValuetableForm: TValuetableForm
     ExtendedSelect = False
     FixedRows = 0
     Flat = True
+    MouseWheelOption = mwGrid
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goSmoothScroll]
     ParentFont = False
     RowCount = 2
@@ -2148,10 +2149,10 @@ object ValuetableForm: TValuetableForm
       2
       0
       0
-      'T in s'
+      't in s'
       0
       1
-      'V in v'
+      'U in V'
     )
   end
 end

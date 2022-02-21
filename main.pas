@@ -27,6 +27,7 @@ type
     CalcAccuracyInput1: TTrackBar;
     CalcAccuracyInputLabel1: TLabel;
     Label1: TLabel;
+    Label2: TLabel;
     ResistorInputE: TComboBox;
     InVoltageInputE: TComboBox;
     Chart1: TChart;
@@ -328,7 +329,9 @@ begin
       if error_input<>0 then
       begin
          if Debug then debugln('Eingabefehler an der Stelle:' + Inttostr(error_input));
+         InVoltageInput.color:=$006B6BFF;
          //ShowMessage('Eingabefehler an der Stelle:' + Inttostr(error_input));
+         //Label2.Caption:='Eingabefehler an der Stelle:' + Inttostr(error_input);
       end
       else
       begin
@@ -339,7 +342,7 @@ begin
         //  debugln('Val to Voltage macht nicht seinen Job');
         //  InputVoltage:=Strtofloat(InVoltageInput.text);
         //end;
-
+        InVoltageInput.color:=clDefault;
         valbool:=true;
       end;
       end
@@ -348,9 +351,15 @@ begin
         if Debug then debugln('Update Volt Unit');
         SAVE.WriteInteger('SimulationSettings', 'InputVoltageUnit', InVoltageInputE.ItemIndex);
         if (InVoltageInputE.ItemIndex <> -1) then
-           InVoltageInput.Enabled:= true
+        begin
+           InVoltageInput.Enabled:= true;
+           InVoltageInputE.color:=clDefault;
+        end
         else
+        begin
            InVoltageInput.Enabled:= false;
+           InVoltageInputE.color:=$006B6BFF;
+        end;
 
         case InVoltageInputE.ItemIndex of
         0:
@@ -373,12 +382,15 @@ begin
       if (error_input<>0) then
       begin
          if Debug then debugln('Eingabefehler an der Stelle:' + Inttostr(error_input));
+         CapacityInput.Color:=$006B6BFF;
+         //Label2.Caption:='Eingabefehler an der Stelle:'+ LineEnding + Inttostr(error_input);
       end
       else
       begin
       if Debug then debugln('Update Capacity');
       SAVE.WriteFloat('SimulationSettings', 'CapacitorCapacity', InputCapacity);
       valbool:=true;
+      CapacityInput.Color:=clDefault;
       end;
     end
     else
@@ -386,9 +398,17 @@ begin
       if Debug then debugln('Update Capacity Unit');
       SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacityUnit', CapacityInputE.ItemIndex);
       if (CapacityInputE.ItemIndex <> -1) then
-         CapacityInput.Enabled:= true
+      begin
+         CapacityInput.Enabled:= true;
+         CapacityInputE.color:=clDefault;
+         //Label2.Caption:='';
+      end
       else
+      begin
          CapacityInput.Enabled:= false;
+         CapacityInputE.color:=$006B6BFF;
+         //Label2.Caption:='Die kapazitäts Einheit muss '+ LineEnding +' µF, nF oder pF sein.';
+      end;
 
       case CapacityInputE.ItemIndex of
       0:
@@ -416,12 +436,14 @@ begin
       if error_input<>0 then
       begin
          if Debug then debugln('Eingabefehler an der Stelle:' + Inttostr(error_input));
+         ResistorInput.color:=$006B6BFF;
       end
       else
       begin
         if Debug then debugln('Update Resistor Size');
         SAVE.WriteFloat('SimulationSettings', 'DischargeResistor', InputResistor);
         CircuitResistor.Caption := ResistorInput.text + 'Ohm';
+        ResistorInput.color:=clDefault;
         valbool:=true;
       end;
     end
@@ -430,9 +452,15 @@ begin
       if Debug then debugln('Update Resistor Unit');
       SAVE.WriteInteger('SimulationSettings', 'DischargeResistorUnit', ResistorInputE.ItemIndex);
       if (ResistorInputE.ItemIndex <> -1) then
-         ResistorInput.Enabled:= true
+      begin
+         ResistorInput.Enabled:= true;
+         ResistorInputE.color:=clDefault;
+      end
       else
+      begin
          ResistorInput.Enabled:= false;
+         ResistorInputE.color:=$006B6BFF;
+      end;
 
       case ResistorInputE.ItemIndex of
       0:
@@ -465,7 +493,7 @@ begin
     LoadUnload.Enabled := False;
   end;
 
-  if (LoadUnload.Caption = 'Abbrechen') then
+  if (LoadUnload.Caption = 'Stop') then
   begin
    CancelProzess;
   end;
@@ -586,7 +614,7 @@ end;
 
 procedure TMainFrame.UnLoadClick(Sender: TObject);
 begin
-  if LoadUnload.Caption = 'Abbrechen' then StartCalculation;//Cancel
+  if LoadUnload.Caption = 'Stop' then StartCalculation;//Cancel
   StartCalculation;//Load
 end;
 
@@ -606,7 +634,7 @@ begin
         Load.Visible := False;
         UnLoad.Visible := True;
         CircuitSwitch.Caption := 'Entladen';
-        LoadUnload.Caption := 'Abbrechen';
+        LoadUnload.Caption := 'Stop';
         if Debug then debugln('---------------------------');
         if Debug then debugln('Calc the max Unload Time.');
 
@@ -637,7 +665,7 @@ begin
       CircuitSwitch.Caption := 'Laden';
       tsim.PTSState := False;
       LoadUnload.Caption := 'Entladen';
-     end else if (LoadUnload.Caption = 'Abbrechen') then
+     end else if (LoadUnload.Caption = 'Stop') then
      begin
       CancelProzess;
      end;
@@ -646,14 +674,14 @@ end;
 procedure TMainFrame.CancelProzess;
 begin
      tcalc1.Terminate;
-     CalcPercentage.Caption := 'Abgebrochen';
+     CalcPercentage.Caption := 'Berechnung/Entladung Abgebrochen';
      LoadUnload.Caption := 'Laden';
 end;
 
 procedure TMainFrame.BeendenClick(Sender: TObject);
 begin
   terminate:=true;
-  if (LoadUnload.Caption = 'Abbrechen') then
+  if (LoadUnload.Caption = 'Stop') then
   begin
     tcalc1.Terminate;
   end;
@@ -674,7 +702,7 @@ var
   cpucount: int64;
 begin
   if Debug then debugln('Max Unload Time: ' + Floattostr(Result));
-  Label1.Caption:='Max Unload Time: ' + Floattostr(Result) + 's';
+  //Label1.Caption:='Entlade Zeit: ' + Floattostr(Result) + 's';
 
   cpucount := 1;
   { Get the current values }
@@ -744,7 +772,7 @@ begin
   ValueTable[1][ceil(t)] := t * calcres1;//Timestamp
   ValueTable[2][ceil(t)] := Result;//Currentvalue
 
-  CalcPercentage.Caption := floattostrf(crsitc / ((crs + 1) / 100), fffixed, 4, 0) + '% ' + Inttostr(crsitc) + ':' + Inttostr(crs + 1);
+  CalcPercentage.Caption := 'Berechnung: ' + floattostrf(crsitc / ((crs + 1) / 100), fffixed, 4, 0) + '% ' + Inttostr(crsitc) + ':' + Inttostr(crs + 1);
   Application.ProcessMessages;
 
   ib:=0;
@@ -752,8 +780,8 @@ begin
   begin
     ValuetableForm.StringGrid1.ColCount := crsitc + 1;
     ValuetableForm.StringGrid1.RowCount := 2;
-    ValuetableForm.StringGrid1.Cells[0, 0] := 'T in s';
-    ValuetableForm.StringGrid1.Cells[0, 1] := 'V in v';
+    ValuetableForm.StringGrid1.Cells[0, 0] := 't in s';
+    ValuetableForm.StringGrid1.Cells[0, 1] := 'U in V';
     //ValuetableForm.StringGrid1.Cells[0, 2] := 'C in F';
 
     if Debug then debugln('Fastdraw: ' + Booltostr(CheckBox1.Checked));
@@ -772,7 +800,7 @@ begin
           chartdrawing:=true;
         end;
 
-        if (LoadUnload.Caption = 'Abbrechen') and not terminate then
+        if (LoadUnload.Caption = 'Stop') and not terminate then
         begin
           //Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
           Chart1BSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
@@ -796,7 +824,7 @@ begin
 
     if not (LoadUnload.Caption = 'Laden') then
     begin
-      CalcPercentage.Caption := 'Abgeschlossen';
+      CalcPercentage.Caption := 'Berechnung: Abgeschlossen';
       LoadUnload.Caption := 'Laden';
     end;
   end;

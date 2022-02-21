@@ -1,7 +1,7 @@
 object HelpForm: THelpForm
-  Left = 698
+  Left = 1419
   Height = 869
-  Top = 111
+  Top = 122
   Width = 375
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -2174,7 +2174,7 @@ object HelpForm: THelpForm
     Top = 184
     Width = 302
     AutoSize = False
-    Caption = 'Zum entladen über einen Wiederstand, des'#10'Kondensator im Schaltplan, werden zur'#10'Simulation und Berechung 3 Werte benötigt.'#10'Die Spannung mit der aufgeladen wird.'#10'die Kapazität vom Kondensator und'#10'der Wiederstand über dem Entladen wird.'#10#10'Eingegeben werden können Ganzzahlen wie'#10'1-9 aber auch flieskomma Zahlen wie 0.5 oder'#10'0.333, dabei ist zu beachten dass ein Punkt'#10'anstelle des Komma gesetzt werden muss.'#10#10'Zusätzlich muss noch die Einheit angegeben'#10'sein.'#10#10'Wenn all die Punkte erfüllt sind wird der'#10'entlade Knopf Eingeschaltet.'
+    Caption = 'Zum Entladen über einen Widerstand, des'#10'Kondensator im Schaltplan, werden zur'#10'Simulation und Berechnung 3 Werte benötigt.'#10'Die Spannung, mit der aufgeladen wird,'#10'die Kapazität vom Kondensator und'#10'der Widerstand über dem Entladen wird.'#10#10'Eingegeben werden können Ganzzahlen wie'#10'1–9, aber auch Fließkomma Zahlen wie 0.5 oder'#10'0.333, dabei ist zu beachten, dass ein Punkt'#10'anstelle des Kommas gesetzt werden muss.'#10#10'Zusätzlich muss noch die Einheit angegeben'#10'sein.'#10#10'Wenn all die Punkte erfüllt sind, wird der'#10'"entladen" Knopf eingeschaltet.'
     Font.Height = 14
     ParentColor = False
     ParentFont = False
@@ -2205,7 +2205,7 @@ object HelpForm: THelpForm
     Top = 488
     Width = 304
     AutoSize = False
-    Caption = 'Es kann die Berechnungsgenauigkeit eingestellt'#10'werden. Dafür aktivieren sie das Kästchen'#10'Einstellungen und Schieben die Regler auf die'#10'gewünschte genauigkeit.'#10'!ACHTUNG Die einstellungen können lange'#10'Berechnungszeiten verursachen.'#10'Dass ist systemabhängig.'
+    Caption = 'Es kann die Berechnungsgenauigkeit eingestellt'#10'werden. Dafür aktivieren sie das Kästchen'#10'Einstellungen und schieben die Regler auf die'#10'gewünschte Genauigkeit.'#10'!ACHTUNG: Die Einstellungen können lange'#10'Berechnungszeiten verursachen.'#10'Das ist systemabhängig.'
     Font.Height = 14
     ParentColor = False
     ParentFont = False
@@ -2236,7 +2236,7 @@ object HelpForm: THelpForm
     Top = 648
     Width = 312
     AutoSize = False
-    Caption = 'In dem Diagramm kann hinein gezoomt werden'#10'durch dass gedrückt Halten der Linken Maus-'#10'taste und das Ziehen von Links oben nach Rechts'#10'Unten, dadurch wählen Sie den gewünschten'#10'bereich aus, den Sie sehen möchten.'
+    Caption = 'In dem Diagramm kann hinein gezoomt werden.'#10'Durch das gedrückt Halten der linken Maus-'#10'taste und das Ziehen von links oben nach rechts'#10'unten, wählen Sie den gewünschten'#10'Bereich aus, den Sie sehen '
     Font.Height = 14
     ParentColor = False
     ParentFont = False

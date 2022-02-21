@@ -1,7 +1,7 @@
 object MainFrame: TMainFrame
-  Left = 1097
+  Left = 1083
   Height = 769
-  Top = 185
+  Top = 179
   Width = 823
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
@@ -2131,7 +2131,7 @@ object MainFrame: TMainFrame
   object Tabelle: TButton
     Left = 8
     Height = 25
-    Top = 698
+    Top = 696
     Width = 88
     Caption = 'Wertetabelle'
     OnClick = TabelleClick
@@ -2152,7 +2152,7 @@ object MainFrame: TMainFrame
   object Help: TButton
     Left = 96
     Height = 25
-    Top = 698
+    Top = 696
     Width = 88
     Caption = 'Hilfe'
     OnClick = HelpClick
@@ -2181,18 +2181,20 @@ object MainFrame: TMainFrame
   end
   object InVoltageLabel: TLabel
     Left = 10
-    Height = 14
+    Height = 24
     Top = 104
-    Width = 72
-    Caption = 'Spannung S'
+    Width = 74
+    AutoSize = False
+    Caption = 'Spannung U'
     ParentColor = False
     ParentFont = False
   end
   object CapacityLabel: TLabel
     Left = 10
-    Height = 14
+    Height = 24
     Top = 152
     Width = 67
+    AutoSize = False
     Caption = 'Kapazität C'
     ParentColor = False
     ParentFont = False
@@ -3154,9 +3156,10 @@ object MainFrame: TMainFrame
   end
   object CalcAccuracyLabel: TLabel
     Left = 8
-    Height = 14
-    Top = 576
+    Height = 24
+    Top = 552
     Width = 155
+    AutoSize = False
     Caption = 'Berechnungs Genauigkeit'
     ParentColor = False
     ParentFont = False
@@ -3173,7 +3176,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInput: TTrackBar
     Left = 8
     Height = 37
-    Top = 592
+    Top = 568
     Width = 117
     Max = 3
     OnChange = CalcAccuracyInputChange
@@ -3185,7 +3188,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInputLabel: TLabel
     Left = 128
     Height = 14
-    Top = 604
+    Top = 580
     Width = 26
     Caption = '1.0F'
     ParentColor = False
@@ -3194,7 +3197,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInputLabel1: TLabel
     Left = 128
     Height = 14
-    Top = 641
+    Top = 617
     Width = 25
     Caption = '1.0s'
     ParentColor = False
@@ -3203,7 +3206,7 @@ object MainFrame: TMainFrame
   object CalcAccuracyInput1: TTrackBar
     Left = 8
     Height = 37
-    Top = 629
+    Top = 605
     Width = 117
     Max = 3
     OnChange = CalcAccuracyInput1Change
@@ -3291,8 +3294,8 @@ object MainFrame: TMainFrame
     Left = 8
     Height = 23
     Top = 672
-    Width = 82
-    Caption = 'FastDraw'
+    Width = 123
+    Caption = 'Schnellzeichnen'
     OnChange = CheckBox2Change
     ParentFont = False
     TabOrder = 8
@@ -3309,23 +3312,25 @@ object MainFrame: TMainFrame
     ParentFont = False
   end
   object CalcPercentage: TLabel
-    Left = 13
-    Height = 1
-    Top = 749
-    Width = 1
+    Left = 10
+    Height = 18
+    Top = 751
+    Width = 536
+    AutoSize = False
     Font.Color = 8684676
     ParentColor = False
     ParentFont = False
   end
   object CheckBox2: TCheckBox
-    Left = 96
+    Left = 8
     Height = 23
-    Top = 672
-    Width = 75
-    Caption = 'Settings'
+    Top = 648
+    Width = 110
+    Caption = 'Einstellungen'
     OnChange = CheckBox2Change
     ParentFont = False
     TabOrder = 9
+    Visible = False
   end
   object CapacityInputE: TComboBox
     Left = 133
@@ -3334,8 +3339,6 @@ object MainFrame: TMainFrame
     Width = 64
     ItemHeight = 0
     Items.Strings = (
-      'F'
-      'mF'
       'µF'
       'nF'
       'pF'
@@ -3405,11 +3408,21 @@ object MainFrame: TMainFrame
   end
   object Label1: TLabel
     Left = 10
-    Height = 109
-    Top = 269
-    Width = 166
+    Height = 29
+    Top = 64
+    Width = 182
     AutoSize = False
     ParentColor = False
     ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 10
+    Height = 63
+    Top = 264
+    Width = 185
+    AutoSize = False
+    ParentColor = False
+    ParentFont = False
+    OptimalFill = True
   end
 end

@@ -1,13 +1,14 @@
 object MainFrame: TMainFrame
   Left = 1083
-  Height = 769
+  Height = 961
   Top = 179
-  Width = 823
+  Width = 1029
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Simulator - Kondensatorladung'
-  ClientHeight = 769
-  ClientWidth = 823
+  ClientHeight = 961
+  ClientWidth = 1029
+  DesignTimePPI = 120
   Icon.Data = {
     3E08010000000100010080800000010020002808010016000000280000008000
     0000000100000100200000000000000001006400000064000000000000000000
@@ -2127,22 +2128,22 @@ object MainFrame: TMainFrame
   }
   OnCreate = FormCreate
   Position = poDesktopCenter
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.2.0.4'
   object Tabelle: TButton
-    Left = 8
-    Height = 25
-    Top = 696
-    Width = 88
+    Left = 10
+    Height = 31
+    Top = 870
+    Width = 110
     Caption = 'Wertetabelle'
     OnClick = TabelleClick
     ParentFont = False
     TabOrder = 0
   end
   object LoadUnload: TButton
-    Left = 8
-    Height = 25
-    Top = 723
-    Width = 88
+    Left = 10
+    Height = 31
+    Top = 904
+    Width = 110
     Caption = 'Entladen'
     Enabled = False
     OnClick = LoadUnloadClick
@@ -2150,60 +2151,56 @@ object MainFrame: TMainFrame
     TabOrder = 1
   end
   object Help: TButton
-    Left = 96
-    Height = 25
-    Top = 696
-    Width = 88
+    Left = 120
+    Height = 31
+    Top = 870
+    Width = 110
     Caption = 'Hilfe'
     OnClick = HelpClick
     ParentFont = False
     TabOrder = 2
   end
   object AppHeadline: TLabel
-    Left = 8
-    Height = 26
-    Top = 8
-    Width = 106
+    Left = 10
+    Height = 41
+    Top = 10
+    Width = 126
     Caption = 'Simulator'
-    Font.Height = -24
-    ParentColor = False
+    Font.Height = -30
     ParentFont = False
   end
   object AppSubHeadline: TLabel
-    Left = 8
-    Height = 15
-    Top = 41
-    Width = 191
+    Left = 10
+    Height = 25
+    Top = 51
+    Width = 239
     Caption = 'Entladung eines Kondensators'
-    Font.Height = -14
-    ParentColor = False
+    Font.Height = -18
     ParentFont = False
   end
   object InVoltageLabel: TLabel
-    Left = 10
-    Height = 24
-    Top = 104
-    Width = 74
+    Left = 12
+    Height = 30
+    Top = 130
+    Width = 92
     AutoSize = False
     Caption = 'Spannung U'
-    ParentColor = False
     ParentFont = False
   end
   object CapacityLabel: TLabel
-    Left = 10
-    Height = 24
-    Top = 152
-    Width = 67
+    Left = 12
+    Height = 30
+    Top = 190
+    Width = 84
     AutoSize = False
     Caption = 'Kapazität C'
-    ParentColor = False
     ParentFont = False
   end
   object Circuit: TImage
-    Left = 202
-    Height = 342
-    Top = 42
-    Width = 574
+    Left = 252
+    Height = 428
+    Top = 52
+    Width = 718
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963392A000089504E47
       0D0A1A0A0000000D494844520000023D0000016008060000005069C8B5000011
@@ -2548,10 +2545,10 @@ object MainFrame: TMainFrame
     Stretch = True
   end
   object Load: TImage
-    Left = 546
-    Height = 45
-    Top = 56
-    Width = 38
+    Left = 682
+    Height = 56
+    Top = 70
+    Width = 48
     OnClick = LoadClick
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963EF20000089504E47
@@ -2823,10 +2820,10 @@ object MainFrame: TMainFrame
     Stretch = True
   end
   object UnLoad: TImage
-    Left = 580
-    Height = 45
-    Top = 56
-    Width = 38
+    Left = 725
+    Height = 56
+    Top = 70
+    Width = 48
     OnClick = UnLoadClick
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963CD20000089504E47
@@ -3098,86 +3095,78 @@ object MainFrame: TMainFrame
     Visible = False
   end
   object CircuitTitle: TLabel
-    Left = 201
-    Height = 14
-    Top = 16
-    Width = 64
+    Left = 251
+    Height = 20
+    Top = 20
+    Width = 69
     Caption = 'Schaltplan'
-    ParentColor = False
     ParentFont = False
   end
   object ResistorLabel: TLabel
-    Left = 10
-    Height = 14
-    Top = 205
-    Width = 87
+    Left = 12
+    Height = 20
+    Top = 256
+    Width = 97
     Caption = 'Wiederstand R'
-    ParentColor = False
     ParentFont = False
   end
   object CircuitMessuredVoltage: TLabel
-    Left = 448
-    Height = 14
-    Top = 205
-    Width = 19
+    Left = 560
+    Height = 20
+    Top = 256
+    Width = 21
     Caption = 'NA'
-    ParentColor = False
     ParentFont = False
   end
   object CircuitResistor: TLabel
-    Left = 765
-    Height = 70
-    Top = 230
-    Width = 58
+    Left = 956
+    Height = 88
+    Top = 288
+    Width = 72
     AutoSize = False
     Caption = 'NAOhm'
-    ParentColor = False
     ParentFont = False
   end
   object CircuitVolt: TLabel
-    Left = 269
-    Height = 14
-    Top = 205
-    Width = 19
+    Left = 336
+    Height = 20
+    Top = 256
+    Width = 21
     Caption = 'NA'
-    ParentColor = False
     ParentFont = False
     WordWrap = True
   end
   object CircuitSwitch: TLabel
-    Left = 563
-    Height = 14
-    Top = 32
-    Width = 37
+    Left = 704
+    Height = 20
+    Top = 40
+    Width = 40
     Alignment = taCenter
     Caption = 'Laden'
-    ParentColor = False
     ParentFont = False
   end
   object CalcAccuracyLabel: TLabel
-    Left = 8
-    Height = 24
-    Top = 552
-    Width = 155
+    Left = 10
+    Height = 30
+    Top = 690
+    Width = 194
     AutoSize = False
     Caption = 'Berechnungs Genauigkeit'
-    ParentColor = False
     ParentFont = False
   end
   object CircuitMessuredCurrent0: TLabel
-    Left = 698
-    Height = 14
-    Top = 112
-    Width = 19
+    Left = 872
+    Height = 20
+    Top = 140
+    Width = 21
     Caption = 'NA'
-    ParentColor = False
     ParentFont = False
   end
   object CalcAccuracyInput: TTrackBar
-    Left = 8
-    Height = 37
-    Top = 568
-    Width = 117
+    Left = 10
+    Height = 46
+    Top = 710
+    Width = 146
     Max = 3
     OnChange = CalcAccuracyInputChange
     Position = 0
@@ -3186,28 +3175,26 @@ object MainFrame: TMainFrame
     TabOrder = 3
   end
   object CalcAccuracyInputLabel: TLabel
-    Left = 128
-    Height = 14
-    Top = 580
+    Left = 160
+    Height = 20
+    Top = 725
     Width = 26
     Caption = '1.0F'
-    ParentColor = False
     ParentFont = False
   end
   object CalcAccuracyInputLabel1: TLabel
-    Left = 128
-    Height = 14
-    Top = 617
+    Left = 160
+    Height = 20
+    Top = 771
     Width = 25
     Caption = '1.0s'
-    ParentColor = False
     ParentFont = False
   end
   object CalcAccuracyInput1: TTrackBar
-    Left = 8
-    Height = 37
-    Top = 605
-    Width = 117
+    Left = 10
+    Height = 46
+    Top = 756
+    Width = 146
     Max = 3
     OnChange = CalcAccuracyInput1Change
     Position = 0
@@ -3216,10 +3203,10 @@ object MainFrame: TMainFrame
     TabOrder = 4
   end
   object Chart1: TChart
-    Left = 198
-    Height = 361
-    Top = 384
-    Width = 618
+    Left = 248
+    Height = 451
+    Top = 480
+    Width = 772
     AntialiasingMode = amOn
     AxisList = <    
       item
@@ -3269,20 +3256,20 @@ object MainFrame: TMainFrame
     end
   end
   object Beenden: TButton
-    Left = 96
-    Height = 25
-    Top = 723
-    Width = 88
+    Left = 120
+    Height = 31
+    Top = 904
+    Width = 110
     Caption = 'Beenden'
     OnClick = BeendenClick
     ParentFont = False
     TabOrder = 6
   end
   object ChartListbox1: TChartListbox
-    Left = 617
-    Height = 194
-    Top = 429
-    Width = 182
+    Left = 771
+    Height = 242
+    Top = 536
+    Width = 228
     Chart = Chart1
     Enabled = False
     ItemHeight = 0
@@ -3291,41 +3278,39 @@ object MainFrame: TMainFrame
     Visible = False
   end
   object CheckBox1: TCheckBox
-    Left = 8
-    Height = 23
-    Top = 672
-    Width = 123
+    Left = 10
+    Height = 24
+    Top = 840
+    Width = 129
     Caption = 'Schnellzeichnen'
     OnChange = CheckBox2Change
     ParentFont = False
     TabOrder = 8
   end
   object CreatedBy: TLabel
-    Left = 652
-    Height = 8
-    Top = 752
-    Width = 164
+    Left = 815
+    Height = 12
+    Top = 940
+    Width = 190
     Caption = 'Created by: Michael Nehring 12k1 2022 v1.2'
     Font.Color = 8684676
-    Font.Height = -8
-    ParentColor = False
+    Font.Height = -10
     ParentFont = False
   end
   object CalcPercentage: TLabel
-    Left = 10
-    Height = 18
-    Top = 751
-    Width = 536
+    Left = 12
+    Height = 22
+    Top = 939
+    Width = 670
     AutoSize = False
     Font.Color = 8684676
-    ParentColor = False
     ParentFont = False
   end
   object CheckBox2: TCheckBox
-    Left = 8
-    Height = 23
-    Top = 648
-    Width = 110
+    Left = 10
+    Height = 24
+    Top = 810
+    Width = 112
     Caption = 'Einstellungen'
     OnChange = CheckBox2Change
     ParentFont = False
@@ -3333,11 +3318,11 @@ object MainFrame: TMainFrame
     Visible = False
   end
   object CapacityInputE: TComboBox
-    Left = 133
-    Height = 27
-    Top = 173
-    Width = 64
-    ItemHeight = 0
+    Left = 166
+    Height = 28
+    Top = 216
+    Width = 80
+    ItemHeight = 20
     Items.Strings = (
       'µF'
       'nF'
@@ -3349,39 +3334,39 @@ object MainFrame: TMainFrame
     Text = 'NA'
   end
   object CapacityInput: TEdit
-    Left = 10
-    Height = 27
-    Top = 173
-    Width = 118
+    Left = 12
+    Height = 28
+    Top = 216
+    Width = 148
     Enabled = False
     OnChange = CapacityInputChange
     ParentFont = False
     TabOrder = 11
   end
   object InVoltageInput: TEdit
-    Left = 10
-    Height = 27
-    Top = 122
-    Width = 118
+    Left = 12
+    Height = 28
+    Top = 152
+    Width = 148
     OnChange = InVoltageInputChange
     ParentFont = False
     TabOrder = 12
   end
   object ResistorInput: TEdit
-    Left = 10
-    Height = 27
-    Top = 224
-    Width = 118
+    Left = 12
+    Height = 28
+    Top = 280
+    Width = 148
     OnChange = ResistorInputChange
     ParentFont = False
     TabOrder = 13
   end
   object ResistorInputE: TComboBox
-    Left = 133
-    Height = 27
-    Top = 224
-    Width = 64
-    ItemHeight = 0
+    Left = 166
+    Height = 28
+    Top = 280
+    Width = 80
+    ItemHeight = 20
     ItemIndex = 0
     Items.Strings = (
       'Ω'
@@ -3392,11 +3377,11 @@ object MainFrame: TMainFrame
     Text = 'Ω'
   end
   object InVoltageInputE: TComboBox
-    Left = 133
-    Height = 27
-    Top = 122
-    Width = 64
-    ItemHeight = 0
+    Left = 166
+    Height = 28
+    Top = 152
+    Width = 80
+    ItemHeight = 20
     ItemIndex = 0
     Items.Strings = (
       'V'
@@ -3407,21 +3392,19 @@ object MainFrame: TMainFrame
     Text = 'V'
   end
   object Label1: TLabel
-    Left = 10
-    Height = 29
-    Top = 64
-    Width = 182
+    Left = 12
+    Height = 36
+    Top = 80
+    Width = 228
     AutoSize = False
-    ParentColor = False
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 10
-    Height = 63
-    Top = 264
-    Width = 185
+    Left = 12
+    Height = 79
+    Top = 330
+    Width = 231
     AutoSize = False
-    ParentColor = False
     ParentFont = False
     OptimalFill = True
   end

@@ -127,6 +127,7 @@ var
   //Already defined InVoltageInput.position,CapacityInput.position,ResistorInput.position,CalcAccuracyInput.position,CalcAccuracyInput1.position;
   CUnitMultiplicator,VUnitMultiplicator,RUnitMultiplicator: Real;
   InputCapacity,InputVoltage,InputResistor:Real;
+  MaxUnloadTimeR:Real;
 
   calcres: double;
   calcres1: double;
@@ -703,6 +704,7 @@ var
 begin
   if Debug then debugln('Max Unload Time: ' + Floattostr(Result));
   //Label1.Caption:='Entlade Zeit: ' + Floattostr(Result) + 's';
+  MaxUnloadTimeR:=Result;
 
   cpucount := 1;
   { Get the current values }
@@ -720,8 +722,8 @@ begin
   if Debug then debugln('Max Calculations: ' + Inttostr(crs));
 
   //Showmessage(inttostr(crs));
-  SetLength(ValueTable[1], crs + 1);
-  SetLength(ValueTable[2], crs + 1);
+  SetLength(ValueTable[1], crs + 2);
+  SetLength(ValueTable[2], crs + 2);
 
   //zero_load_time:=Result;//Zeit
   crsitc := 0;
@@ -788,6 +790,7 @@ begin
 
     for i := 0 to High(ValueTable[1]) do
     begin
+      //if (ValueTable[2][i] = 0) then
       if not (ValueTable[2][(i - 1)] = ValueTable[2][i]) then
       begin
         if CheckBox1.Checked and chartdrawing then
@@ -802,6 +805,7 @@ begin
 
         if (LoadUnload.Caption = 'Stop') and not terminate then
         begin
+          if (ValueTable[2][i] = 0) and (ValueTable[1][i] = 0) then ValueTable[1][i]:=MaxUnloadTimeR;
           //Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
           Chart1BSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
           //Chart1CubicSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);

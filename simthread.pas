@@ -132,8 +132,8 @@ begin
   begin
 
   //TSState_time == timestamp in ms
-  TSSTimestamp_v:=(Round((DateTimeToUnix(Now) - TSState_time)));//floor(ln(TSVoltage)*TSResistor*TSCapacity) -
-  //if MainFrame.Debug then debugln(Floattostr(DateTimeToUnix(Now) - TSState_time));
+  TSSTimestamp_v:=(Round((DateTimeToUnix(Now) - TSState_time)));
+
   if(TSSTimestamp_v <= 0)
   then TSSTimestamp := 0
   else TSSTimestamp := TSSTimestamp_v;
@@ -141,82 +141,50 @@ begin
     //[1]
     if not true then//TSSVoltage = TSVoltage
     begin
-
       TSSVoltage_i:= TSSVoltage_i + 1;
-
-      //((10s * 1000) / delay_time) == TSSVoltage_i
-
       TSSVoltage_e:=Round(  TSSVoltage_i *  (  (TSVoltage - TSSVoltage) / ((1000 * 1000) / delay_time)  ));
-
-      //TSSVoltage := Round(Power(time, 2) * );
     end
     else
     begin
       TSSVoltage_e := TSVoltage;
       TSSVoltage_i:=0;
     end;
-
-    //NewStatus [1] = TSVoltage
-    //[1]
     NewStatus[1]:=floattostrf(TSSVoltage_e, fffixed, 10, 0) + 'V';
 
-    //NewStatus [2] == TSAmpere
     //[2]
-    if TSState then //TSState Entladen:Laden
+    if TSState then
     begin
-     //TSState_time == timestamp in ms
-
-     //TSResistor := ResistorInput.position;
-     //TSCapacity := InputCapacity * UnitMultiplicator;
-     //TSVoltage := Round(InVoltageInput.position);
-     //TSRes := CalcAccuracyInput.position;
-     //TSRes0 := CalcAccuracyInput1.position;
-
-     //A = U/R
-     //U = TVoltage*Power(Exp(1), -((TSSTimestamp)/(TResistor*TCapacity))
-     //I(t) in A = -(U_0*e^-(t/(r*c))/r)
-     //TSSAmpere:=RoundTo((-(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSResistor), -TSRes);
-
-     if MainFrame.Debug then debugln(Inttostr(TSSTimestamp) + ':' + floattostr(TSVoltage) + ':' + floattostr(TSCapacity) + ':' + floattostr(TSResistor));
-
+     //if MainFrame.Debug then debugln(Inttostr(TSSTimestamp) + ':' + floattostr(TSVoltage) + ':' + floattostr(TSCapacity) + ':' + floattostr(TSResistor));
      NewStatus[2]:=floattostrf(TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))), fffixed, 6, 2) + 'V';
     end
     else
     begin
-     NewStatus[2]:='NA';
+     NewStatus[2]:='0V';
     end;
 
-    //NewStatus [3] == TSColomb
     //[3]
     if TSState then //TSState Entladen:Laden
     begin
-
-     //C in F = -(t/ln(U_0*e^-(t/(r*c))/U_0)*r)
      TSSLadung:=RoundTo(-(TSSTimestamp/(ln((TSVoltage*Power(Exp(1), -((TSSTimestamp)/(TSResistor*TSCapacity))))/TSVoltage)*TSResistor)), -2);
-
      if(TSSLadung <= 0) then TSSLadung_e := 0
      else TSSLadung_e := TSSLadung;
-
      NewStatus[3]:=floattostrf(TSSLadung_e, fffixed, 6, TSRes) + '/' + floattostr(TSCapacity) + 'F';
     end
     else
     begin
-     NewStatus[3]:='NA';
+     NewStatus[3]:='';//NA
     end;
 
-    //NewStatus [4] == Load%
     //[4]
-    if TSState then //TSState Entladen:Laden
+    if TSState then
     begin
-     if MainFrame.Debug then debugln('TSSLadung_e: ' + Floattostr(TSSLadung_e) + ' TSCapacity: ' + floattostr(TSCapacity * 100));
+     //if MainFrame.Debug then debugln('TSSLadung_e: ' + Floattostr(TSSLadung_e) + ' TSCapacity: ' + floattostr(TSCapacity * 100));
      NewStatus[4]:=floattostrf((TSSLadung_e / TSCapacity * 100), fffixed, 6, TSRes) + '%';
     end
     else
     begin
-     NewStatus[4]:='NA%';
+     NewStatus[4]:='0%';
     end;
-
-
 
     for arrayi:=1 to 4 do
     begin
@@ -265,12 +233,6 @@ var
   roundtoi: int32;
 begin
 
- //TResistor//R
- //TCapacity//C
- //TVoltage//U_0
- //TRes//
- //TMode//Max Time Calc
-  //SetThreadAffinty(0);
   if(TRes1 = 0.01)
   then roundtoi:=2
   else if(TRes1 = 0.001)

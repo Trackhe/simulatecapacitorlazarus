@@ -177,7 +177,7 @@ begin
 
   CapacityInput.caption := Floattostr(SAVE.ReadFloat('SimulationSettings', 'CapacitorCapacity', 0.0));
   SAVE.WriteFloat('SimulationSettings', 'CapacitorCapacity', Strtofloat(CapacityInput.text));
-  CapacityInputE.ItemIndex := SAVE.ReadInteger('SimulationSettings', 'CapacitorCapacityUnit', -1);
+  CapacityInputE.ItemIndex := SAVE.ReadInteger('SimulationSettings', 'CapacitorCapacityUnit', 0);
   SAVE.WriteInteger('SimulationSettings', 'CapacitorCapacityUnit', CapacityInputE.ItemIndex);
 
   ResistorInput.caption := Floattostr(SAVE.ReadFloat('SimulationSettings', 'DischargeResistor', 0.0));
@@ -703,7 +703,7 @@ var
   cpucount: int64;
 begin
   if Debug then debugln('Max Unload Time: ' + Floattostr(Result));
-  //Label1.Caption:='Entlade Zeit: ' + Floattostr(Result) + 's';
+  Label1.Caption:='Entlade Zeit: ' + Floattostr(Result) + 's';
   MaxUnloadTimeR:=Result;
 
   cpucount := 1;
@@ -722,11 +722,11 @@ begin
   if Debug then debugln('Max Calculations: ' + Inttostr(crs));
 
   //Showmessage(inttostr(crs));
-  SetLength(ValueTable[1], crs + 2);
-  SetLength(ValueTable[2], crs + 2);
+  SetLength(ValueTable[1], crs + 1);
+  SetLength(ValueTable[2], crs + 1);
 
   //zero_load_time:=Result;//Zeit
-  crsitc := 0;
+  crsitc := -1;
   crstcountpart := crs div cpucount;
   crstcountpartrest := crs mod cpucount;
   if Debug then debugln('CPU Count: ' + Inttostr(cpucount));
@@ -766,32 +766,34 @@ var
   ib: UInt64;
   chartdrawing:Boolean=true;
 begin
-  if Debug then debugln('Result: ' + Floattostr(Result));
-  if Debug then debugln('t: ' + Floattostr(t));
+  //if Debug then debugln('Result: ' + Floattostr(Result));
+  //if Debug then debugln('t: ' + Floattostr(t));
 
   crsitc := crsitc + 1;//Count function calls
 
   ValueTable[1][ceil(t)] := t * calcres1;//Timestamp
+  if Debug then debugln('Insane : ' + Inttostr(ceil(t)));
   ValueTable[2][ceil(t)] := Result;//Currentvalue
 
-  CalcPercentage.Caption := 'Berechnung: ' + floattostrf(crsitc / ((crs + 1) / 100), fffixed, 4, 0) + '% ' + Inttostr(crsitc) + ':' + Inttostr(crs + 1);
+  CalcPercentage.Caption := 'Berechnung: ' + floattostrf(crsitc / ((crs) / 100), fffixed, 4, 0) + '% ' + Inttostr(crsitc) + ':' + Inttostr(crs);
   Application.ProcessMessages;
 
+  if Debug then debugln(Inttostr(crsitc) + ' : ' + Floattostr(t) + ' : ' + Floattostr(Result));
+
   ib:=0;
-  if crsitc = crs + 1 then
+  if crsitc = crs then
   begin
-    ValuetableForm.StringGrid1.ColCount := crsitc + 1;
+    ValuetableForm.StringGrid1.ColCount := crsitc;
     ValuetableForm.StringGrid1.RowCount := 2;
     ValuetableForm.StringGrid1.Cells[0, 0] := 't in s';
     ValuetableForm.StringGrid1.Cells[0, 1] := 'U in V';
     //ValuetableForm.StringGrid1.Cells[0, 2] := 'C in F';
 
     if Debug then debugln('Fastdraw: ' + Booltostr(CheckBox1.Checked));
-
+    if Debug then debugln(Inttostr(High(ValueTable[1])));
     for i := 0 to High(ValueTable[1]) do
     begin
-      //if (ValueTable[2][i] = 0) then
-      if not (ValueTable[2][(i - 1)] = ValueTable[2][i]) then
+      if not (ValueTable[2][(i - 1)] = ValueTable[2][i]) or (i = crsitc) then
       begin
         if CheckBox1.Checked and chartdrawing then
         begin
@@ -805,7 +807,9 @@ begin
 
         if (LoadUnload.Caption = 'Stop') and not terminate then
         begin
-          if (ValueTable[2][i] = 0) and (ValueTable[1][i] = 0) then ValueTable[1][i]:=MaxUnloadTimeR;
+          if Debug then debugln(Floattostr(ValueTable[1][i]) + ' : ' + Floattostr(ValueTable[2][i]) + ': test');
+          if (i = crsitc) then ValueTable[2][i]:=0;
+          //if (ValueTable[2][i] = 0) and (ValueTable[1][i] = 0) then ValueTable[1][i]:=MaxUnloadTimeR;
           //Chart1LineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
           Chart1BSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
           //Chart1CubicSplineSeries1.AddXY(ValueTable[1][i], ValueTable[2][i]);
@@ -816,6 +820,7 @@ begin
           Application.ProcessMessages;
         end;
       end;
+
     end;
     ValuetableForm.StringGrid1.ColCount:= ib + 1;
 
